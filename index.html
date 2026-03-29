@@ -1649,6 +1649,16 @@
 
         <div class="fortune-view-panel" id="fortuneViewResult" hidden>
         <div class="grid">
+          <article class="card reference-layout hidden" id="compatibilityCard">
+            <h2>二人の相性</h2>
+            <div id="compatibilityPanel"></div>
+          </article>
+
+          <div class="result-person-tabs hidden" id="resultPersonTabs">
+            <button class="btn result-person-tab is-active" type="button" data-result-person="primary">本人</button>
+            <button class="btn result-person-tab" type="button" data-result-person="secondary">相手</button>
+          </div>
+
           <article class="card reference-layout">
             <h2>命式</h2>
             <p class="section-note">
@@ -1656,10 +1666,6 @@
             </p>
             <div id="resultEmptyState" class="section-note">まだ計算されていません。</div>
             <div id="resultPanel" class="hidden">
-              <div class="result-person-tabs hidden" id="resultPersonTabs">
-                <button class="btn result-person-tab is-active" type="button" data-result-person="primary">本人</button>
-                <button class="btn result-person-tab" type="button" data-result-person="secondary">相手</button>
-              </div>
               <div class="summary-grid" id="resultSummaryGrid"></div>
               <div class="pill-grid">
                 <table class="pill-table">
@@ -2668,6 +2674,129 @@
         return badges;
       }
 
+      function getTenkanCompatibilityRelation(stemA, stemB) {
+        if (!stemA || !stemB) return "なし";
+        if (TENKAN_KANGOU_MAP[stemA] === stemB) return "干合";
+        const elementA = STEM_META[stemA] && STEM_META[stemA].element;
+        const elementB = STEM_META[stemB] && STEM_META[stemB].element;
+        if (!elementA || !elementB) return "なし";
+        if (elementA === elementB) return "比和";
+        if (GOGYO_GENERATES[elementA] === elementB || GOGYO_GENERATES[elementB] === elementA) return "相生";
+        if (GOGYO_CONTROLS[elementA] === elementB || GOGYO_CONTROLS[elementB] === elementA) return "剋す";
+        return "なし";
+      }
+
+      function getChishiCompatibilityRelation(branchA, branchB) {
+        if (!branchA || !branchB) return "なし";
+        if (CHISHI_SHIGOU_MAP[branchA] === branchB) return "支合";
+        if (CHISHI_SANGOU_GROUPS.some((group) => group.includes(branchA) && group.includes(branchB))) return "三合";
+        if (CHISHI_HOUGOU_GROUPS.some((group) => group.includes(branchA) && group.includes(branchB))) return "方合";
+        if (CHISHI_CHONG_MAP[branchA] === branchB) return "冲";
+        return "なし";
+      }
+
+      function getCompatibilityScoreLabel(score) {
+        if (score >= 90) return { label: "大吉", color: "green" };
+        if (score >= 70) return { label: "吉", color: "green" };
+        if (score >= 50) return { label: "中吉", color: "blue" };
+        if (score >= 30) return { label: "小凶", color: "amber" };
+        if (score >= 10) return { label: "凶", color: "red" };
+        return { label: "大凶", color: "red" };
+      }
+
+      function getCompatibilityRelationColor(label) {
+        if (["干合", "支合", "比和"].includes(label)) return "blue";
+        if (["相生", "三合", "方合"].includes(label)) return "green";
+        if (["剋す", "冲", "互換空亡"].includes(label)) return "red";
+        if (["片方空亡", "空亡"].includes(label)) return "amber";
+        return "blue";
+      }
+
+      function calcCompatibilityScore(primaryInput, primaryResult, secondaryInput, secondaryResult) {
+        const primaryDay = primaryResult.pillars.day;
+        const secondaryDay = secondaryResult.pillars.day;
+        const primaryKuubou = Array.isArray(primaryResult.kuubou) ? primaryResult.kuubou : [];
+        const secondaryKuubou = Array.isArray(secondaryResult.kuubou) ? secondaryResult.kuubou : [];
+        const primaryInSecondaryKuubou = secondaryKuubou.includes(primaryDay.chishi);
+        const secondaryInPrimaryKuubou = primaryKuubou.includes(secondaryDay.chishi);
+
+        const tenkanRelation = getTenkanCompatibilityRelation(primaryDay.tenkan, secondaryDay.tenkan);
+        const chishiRelation = getChishiCompatibilityRelation(primaryDay.chishi, secondaryDay.chishi);
+        const tenkanScore = { 干合: 40, 相生: 30, 比和: 0, 剋す: -20, なし: 0 }[tenkanRelation] || 0;
+        const chishiScore = { 支合: 20, 三合: 20, 方合: 20, 冲: -20, なし: 0 }[chishiRelation] || 0;
+
+        if (primaryInSecondaryKuubou && secondaryInPrimaryKuubou) {
+          const zeroLabel = getCompatibilityScoreLabel(0);
+          return {
+            score: 0,
+            label: zeroLabel.label,
+            labelColor: zeroLabel.color,
+            details: {
+              tenkan: tenkanRelation,
+              tenkanScore,
+              chishi: chishiRelation,
+              chishiScore,
+              kuubou: "互換空亡",
+              kuubouScore: -30,
+              chokou: "未実装",
+              chokouScore: 0
+            },
+            primaryName: primaryInput.name || SLOT_LABELS.primary,
+            secondaryName: secondaryInput.name || SLOT_LABELS.secondary,
+            primaryDay,
+            secondaryDay,
+            dayStemTsuhensei: {
+              primaryToSecondary: getTsuhenByStemPair(primaryDay.tenkan, secondaryDay.tenkan) || EMPTY_DISPLAY,
+              secondaryToPrimary: getTsuhenByStemPair(secondaryDay.tenkan, primaryDay.tenkan) || EMPTY_DISPLAY
+            },
+            zoukanTsuhensei: {
+              primaryToSecondary: getTsuhenByStemPair(primaryDay.tenkan, secondaryResult.zoukan.day) || EMPTY_DISPLAY,
+              secondaryToPrimary: getTsuhenByStemPair(secondaryDay.tenkan, primaryResult.zoukan.day) || EMPTY_DISPLAY
+            }
+          };
+        }
+
+        let score = 50 + tenkanScore + chishiScore;
+        let kuubou = "なし";
+        let kuubouScore = 0;
+        if (primaryInSecondaryKuubou || secondaryInPrimaryKuubou) {
+          score -= 30;
+          kuubou = "片方空亡";
+          kuubouScore = -30;
+        }
+
+        score = Math.max(0, Math.min(100, score));
+        const scoreLabel = getCompatibilityScoreLabel(score);
+
+        return {
+          score,
+          label: scoreLabel.label,
+          labelColor: scoreLabel.color,
+          details: {
+            tenkan: tenkanRelation,
+            tenkanScore,
+            chishi: chishiRelation,
+            chishiScore,
+            kuubou,
+            kuubouScore,
+            chokou: "未実装",
+            chokouScore: 0
+          },
+          primaryName: primaryInput.name || SLOT_LABELS.primary,
+          secondaryName: secondaryInput.name || SLOT_LABELS.secondary,
+          primaryDay,
+          secondaryDay,
+          dayStemTsuhensei: {
+            primaryToSecondary: getTsuhenByStemPair(primaryDay.tenkan, secondaryDay.tenkan) || EMPTY_DISPLAY,
+            secondaryToPrimary: getTsuhenByStemPair(secondaryDay.tenkan, primaryDay.tenkan) || EMPTY_DISPLAY
+          },
+          zoukanTsuhensei: {
+            primaryToSecondary: getTsuhenByStemPair(primaryDay.tenkan, secondaryResult.zoukan.day) || EMPTY_DISPLAY,
+            secondaryToPrimary: getTsuhenByStemPair(secondaryDay.tenkan, primaryResult.zoukan.day) || EMPTY_DISPLAY
+          }
+        };
+      }
+
       function createEmptyWuxingCountMap() {
         return GOGYO_ORDER.reduce((acc, element) => {
           acc[element] = 0;
@@ -3139,6 +3268,8 @@
         fortuneViewButtons: Array.from(document.querySelectorAll("[data-fortune-view]")),
         fortuneViewInput: document.getElementById("fortuneViewInput"),
         fortuneViewResult: document.getElementById("fortuneViewResult"),
+        compatibilityCard: document.getElementById("compatibilityCard"),
+        compatibilityPanel: document.getElementById("compatibilityPanel"),
         person: {
           primary: getPersonElements("primary"),
           secondary: getPersonElements("secondary")
@@ -3740,9 +3871,66 @@
         ].join("");
       }
 
+      function renderCompatibilityMetric(title, value, color, scoreText = "", useBadge = true) {
+        const badge = !useBadge || value === "なし" || value === EMPTY_DISPLAY || !value
+          ? `<span>${escapeHtml(value || EMPTY_DISPLAY)}</span>`
+          : `<span class="rel-badge rel-${color}">${escapeHtml(value)}</span>`;
+        const scoreSuffix = scoreText ? ` <span class="section-note">${escapeHtml(scoreText)}</span>` : "";
+        return `
+          <div class="compatibility-breakdown-item">
+            <h4>${escapeHtml(title)}</h4>
+            <p>${badge}${scoreSuffix}</p>
+          </div>
+        `;
+      }
+
+      function renderCompatibilitySection() {
+        const primaryInput = currentSession.inputs.primary;
+        const secondaryInput = currentSession.inputs.secondary;
+        const primaryResult = currentSession.results.primary;
+        const secondaryResult = currentSession.results.secondary;
+
+        if (!primaryInput || !secondaryInput || !primaryResult || !secondaryResult) {
+          elements.compatibilityCard.classList.add("hidden");
+          elements.compatibilityPanel.innerHTML = "";
+          return;
+        }
+
+        const compatibility = calcCompatibilityScore(primaryInput, primaryResult, secondaryInput, secondaryResult);
+        const dayStemTsuhenText = `${escapeHtml(compatibility.primaryName)}基準 ${escapeHtml(compatibility.dayStemTsuhensei.primaryToSecondary)} / ${escapeHtml(compatibility.secondaryName)}基準 ${escapeHtml(compatibility.dayStemTsuhensei.secondaryToPrimary)}`;
+        const zoukanTsuhenText = `${escapeHtml(compatibility.primaryName)}基準 ${escapeHtml(compatibility.zoukanTsuhensei.primaryToSecondary)} / ${escapeHtml(compatibility.secondaryName)}基準 ${escapeHtml(compatibility.zoukanTsuhensei.secondaryToPrimary)}`;
+
+        elements.compatibilityCard.classList.remove("hidden");
+        elements.compatibilityPanel.innerHTML = `
+          <div class="compatibility-head">
+            <div class="compatibility-score-wrap">
+              <p class="compatibility-score-caption">相性スコア</p>
+              <div class="compatibility-score-line">
+                <span class="compatibility-score">${compatibility.score}</span>
+                <span class="rel-badge rel-${compatibility.labelColor}">${escapeHtml(compatibility.label)}</span>
+              </div>
+            </div>
+            <p class="compatibility-meta">
+              ${escapeHtml(compatibility.primaryName)}: ${escapeHtml(compatibility.primaryDay.tenkan)}${escapeHtml(compatibility.primaryDay.chishi)}<br>
+              ${escapeHtml(compatibility.secondaryName)}: ${escapeHtml(compatibility.secondaryDay.tenkan)}${escapeHtml(compatibility.secondaryDay.chishi)}
+            </p>
+          </div>
+          <div class="compatibility-breakdown">
+            ${renderCompatibilityMetric("天干", compatibility.details.tenkan, getCompatibilityRelationColor(compatibility.details.tenkan), compatibility.details.tenkanScore ? `${compatibility.details.tenkanScore > 0 ? "+" : ""}${compatibility.details.tenkanScore}` : "")}
+            ${renderCompatibilityMetric("地支", compatibility.details.chishi, getCompatibilityRelationColor(compatibility.details.chishi), compatibility.details.chishiScore ? `${compatibility.details.chishiScore > 0 ? "+" : ""}${compatibility.details.chishiScore}` : "")}
+            ${renderCompatibilityMetric("空亡", compatibility.details.kuubou, compatibility.details.kuubou === "なし" ? "blue" : getCompatibilityRelationColor(compatibility.details.kuubou), compatibility.details.kuubouScore ? `${compatibility.details.kuubouScore}` : "")}
+            ${renderCompatibilityMetric("調候用神", compatibility.details.chokou, "amber")}
+            ${renderCompatibilityMetric("天干通変星", dayStemTsuhenText, "blue", "", false)}
+            ${renderCompatibilityMetric("蔵干通変星", zoukanTsuhenText, "blue", "", false)}
+          </div>
+        `;
+      }
+
       function resetResultOutput() {
         elements.resultPanel.classList.add("hidden");
         elements.resultEmptyState.classList.remove("hidden");
+        elements.compatibilityCard.classList.add("hidden");
+        elements.compatibilityPanel.innerHTML = "";
         elements.resultPersonTabs.classList.add("hidden");
         elements.resultSummaryGrid.innerHTML = "";
         elements.pillarsTableBody.innerHTML = "";
@@ -3778,6 +3966,7 @@
           resetResultOutput();
           return;
         }
+        renderCompatibilitySection();
         elements.resultEmptyState.classList.add("hidden");
         elements.resultPanel.classList.remove("hidden");
         elements.resultPersonTabs.classList.toggle("hidden", availableSlots.length < 2);
