@@ -2227,6 +2227,18 @@
         list.push({ label, color, key });
       }
 
+      function isTensenChichu(baseStem, targetStem) {
+        const baseMeta = STEM_META[baseStem];
+        const targetMeta = STEM_META[targetStem];
+        if (!baseMeta || !targetMeta) return false;
+        const samePolarity = baseMeta.yang === targetMeta.yang;
+        if (!samePolarity) return false;
+        return (
+          GOGYO_CONTROLS[baseMeta.element] === targetMeta.element ||
+          GOGYO_CONTROLS[targetMeta.element] === baseMeta.element
+        );
+      }
+
       function branchesCompleteGroup(groups, branchA, branchB, availableBranches) {
         return groups.some((group) => {
           if (!group.includes(branchA) || !group.includes(branchB)) return false;
@@ -2275,7 +2287,7 @@
           pushRelationBadge(badges, `${labelPrefix}天地徳合`, "blue", `${labelPrefix}-tentitokugou`);
         }
         if (
-          basePillar.tenkan === targetPillar.tenkan &&
+          isTensenChichu(basePillar.tenkan, targetPillar.tenkan) &&
           CHISHI_CHONG_MAP[basePillar.chishi] === targetPillar.chishi
         ) {
           pushRelationBadge(badges, `${labelPrefix}天戦地冲`, "red", `${labelPrefix}-tensenchichu`);
