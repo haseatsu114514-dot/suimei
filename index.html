@@ -1021,10 +1021,9 @@
     }
 
     .relation-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
+      display: grid;
+      gap: 4px;
+      justify-items: center;
     }
 
     .rel-badge {
@@ -1653,7 +1652,7 @@
           <article class="card reference-layout">
             <h2>命式</h2>
             <p class="section-note">
-              セルをタップまたはホバーすると説明を表示します。出生時刻が不明な場合、時柱関連は「不明」になります。
+              セルをタップまたはホバーすると説明を表示します。出生時刻が不明な場合、時柱は表示しません。
             </p>
             <div id="resultEmptyState" class="section-note">まだ計算されていません。</div>
             <div id="resultPanel" class="hidden">
@@ -1665,7 +1664,7 @@
               <div class="pill-grid">
                 <table class="pill-table">
                   <thead>
-                    <tr>
+                    <tr id="pillarsTableHeadRow">
                       <th></th>
                       <th>時柱</th>
                       <th>日柱</th>
@@ -1681,7 +1680,7 @@
           </article>
 
           <article class="card reference-layout">
-            <h2>大運</h2>
+            <h2>大運 / 年運 / 月運 / 日運</h2>
             <details class="fold-section">
               <summary class="fold-summary">大運</summary>
               <div class="fold-content">
@@ -1689,10 +1688,6 @@
                 <div class="timeline" id="taiunTimeline"></div>
               </div>
             </details>
-          </article>
-
-          <article class="card">
-            <h2>年運 / 月運 / 日運</h2>
             <details class="fold-section">
               <summary class="fold-summary">年運</summary>
               <div class="fold-content">
@@ -2783,7 +2778,7 @@
           const nextStartAge = Number((startAge + (index + 1) * 10).toFixed(1));
           const zoukan = HONKI_ZOUKAN_MAP[kanshi.chishi] || EMPTY_DISPLAY;
           list.push({
-            label: `${periodStartAge.toFixed(1)}〜${nextStartAge.toFixed(1)}歳`,
+            label: `${Math.round(periodStartAge)}〜${Math.round(nextStartAge)}歳`,
             startAge: periodStartAge,
             endAge: nextStartAge,
             startYear: birthDateParts.year + Math.floor(periodStartAge),
@@ -3154,6 +3149,7 @@
         resultPersonTabs: document.getElementById("resultPersonTabs"),
         resultPersonTabButtons: Array.from(document.querySelectorAll("[data-result-person]")),
         resultSummaryGrid: document.getElementById("resultSummaryGrid"),
+        pillarsTableHeadRow: document.getElementById("pillarsTableHeadRow"),
         pillarsTableBody: document.getElementById("pillarsTableBody"),
         resultNotes: document.getElementById("resultNotes"),
         taiunMeta: document.getElementById("taiunMeta"),
@@ -3719,6 +3715,27 @@
         `;
       }
 
+      function formatRoundedAge(age) {
+        if (!Number.isFinite(Number(age))) {
+          return EMPTY_DISPLAY;
+        }
+        return `${Math.round(Number(age))}歳`;
+      }
+
+      function getVisiblePillarColumns(input) {
+        if (input && input.birthTime && !input.birthTimeUnknown) {
+          return ["hour", "day", "month", "year"];
+        }
+        return ["day", "month", "year"];
+      }
+
+      function renderPillarTableHead(columns) {
+        return [
+          "<th></th>",
+          ...columns.map((column) => `<th${column === "month" ? ' class="is-month-column"' : ""}>${COLUMN_LABELS[column]}</th>`)
+        ].join("");
+      }
+
       function resetResultOutput() {
         elements.resultPanel.classList.add("hidden");
         elements.resultEmptyState.classList.remove("hidden");
@@ -3788,6 +3805,7 @@
         const timeCorrectionBody = input.birthTimeUnknown
           ? "出生時刻不明のため補正なし"
           : `${escapeHtml(result.meta.regionalOffsetLabel || "+0分")} / 補正後 ${escapeHtml(result.meta.correctedBirthTimeText || birthTimeText)}${result.meta.dayShiftLabel ? ` (${escapeHtml(result.meta.dayShiftLabel)})` : ""}`;
+        const columns = getVisiblePillarColumns(input);
 
         elements.resultSummaryGrid.innerHTML = [
           {
@@ -3845,7 +3863,7 @@
           { label: "蔵干通変星", key: "zoukanTsuhensei", type: "tsuhensei" },
           { label: "関係", key: "natalRelations", type: "relations" }
         ];
-        const columns = ["hour", "day", "month", "year"];
+        elements.pillarsTableHeadRow.innerHTML = renderPillarTableHead(columns);
 
         elements.pillarsTableBody.innerHTML = rowDefs.map((row) => {
           const cells = columns.map((column) => {
@@ -3884,7 +3902,7 @@
           : "";
 
         elements.taiunMeta.textContent =
-          `起運: ${result.taiun.startAge.toFixed(1)}歳 / ${result.taiun.direction} / 基準節: ${result.taiun.targetTerm.name} (${formatDateTimeJst(result.taiun.targetTerm.date)})`;
+          `起運: ${formatRoundedAge(result.taiun.startAge)} / ${result.taiun.direction} / 基準節: ${result.taiun.targetTerm.name} (${formatDateTimeJst(result.taiun.targetTerm.date)})`;
         elements.taiunTimeline.innerHTML = renderLuckTable(result.taiun.list, [
           { label: "開始年", key: "startYear" },
           { label: "天干", key: "tenkan", strong: true },
@@ -4038,7 +4056,7 @@
                 <div class="history-grid">
                   <div class="history-mini">
                     <h4>四柱</h4>
-                    <p>時柱: ${escapeHtml(entry.result.pillars.hour.tenkan || "")}${escapeHtml(entry.result.pillars.hour.chishi || "不明")}</p>
+                    ${entry.birthtimeUnknown ? "" : `<p>時柱: ${escapeHtml(entry.result.pillars.hour.tenkan || "")}${escapeHtml(entry.result.pillars.hour.chishi || EMPTY_DISPLAY)}</p>`}
                     <p>日柱: ${escapeHtml(entry.result.pillars.day.tenkan)}${escapeHtml(entry.result.pillars.day.chishi)}</p>
                     <p>月柱: ${escapeHtml(entry.result.pillars.month.tenkan)}${escapeHtml(entry.result.pillars.month.chishi)}</p>
                     <p>年柱: ${escapeHtml(entry.result.pillars.year.tenkan)}${escapeHtml(entry.result.pillars.year.chishi)}</p>
@@ -4047,7 +4065,7 @@
                     <h4>要点</h4>
                     <p>空亡: ${escapeHtml(kuuboText)}</p>
                     <p>月支通変: ${escapeHtml(monthFocusText)}</p>
-                    <p>起運: ${entry.result.taiun.startAge.toFixed(1)}歳 / ${escapeHtml(entry.result.taiun.direction)}</p>
+                    <p>起運: ${formatRoundedAge(entry.result.taiun.startAge)} / ${escapeHtml(entry.result.taiun.direction)}</p>
                     <p>出生地: ${escapeHtml(entry.birthplace || EMPTY_DISPLAY)}</p>
                     <p>蔵干モード: ${entry.zoukan_mode === "custom" ? "流派式" : "本気"}</p>
                   </div>
