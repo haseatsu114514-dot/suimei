@@ -14,9 +14,8 @@
 
 ## 公開先
 
-- GitHub Pages 公開先: `https://haseatsu114514-dot.github.io/seinengappi/`
+- GitHub Pages 公開先: `https://haseatsu114514-dot.github.io/suimei/`
 - 実体ファイル: `index.html`
-- `shichusuimei/index.html` は旧URLからルートへ戻すための転送ページです
 
 ## 使い方
 1. `index.html` か公開URLを開く
@@ -39,7 +38,7 @@
 1. GitHubのこのリポジトリで `Settings` → `Pages` を開く
 2. `Build and deployment` の `Source` を `Deploy from a branch` に設定
 3. `Branch` を `main` / `/ (root)` にして保存
-4. 公開URL（例: `https://haseatsu114514-dot.github.io/seinengappi/`）を開く
+4. 公開URL（例: `https://haseatsu114514-dot.github.io/suimei/`）を開く
 5. ブラウザでお気に入り登録（Windows: `Ctrl + D`, Mac: `Command + D`）
 
 ## 補足
