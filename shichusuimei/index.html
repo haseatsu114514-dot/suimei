@@ -66,33 +66,11 @@
     body {
       font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
       color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(255, 255, 255, 0.45), transparent 32%),
-        linear-gradient(180deg, #ece8df, #ddd8cf 58%, #d5cfc6);
+      background: var(--bg-strong);
     }
 
     body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.26), transparent 22%),
-        repeating-linear-gradient(
-          0deg,
-          rgba(110, 98, 82, 0.03),
-          rgba(110, 98, 82, 0.03) 1px,
-          transparent 1px,
-          transparent 24px
-        ),
-        repeating-linear-gradient(
-          90deg,
-          rgba(110, 98, 82, 0.02),
-          rgba(110, 98, 82, 0.02) 1px,
-          transparent 1px,
-          transparent 24px
-        );
-      opacity: 1;
+      display: none;
     }
 
     button,
@@ -116,31 +94,23 @@
 
     .hero {
       padding: 14px 16px 12px;
-      border-radius: 10px;
-      background: linear-gradient(180deg, rgba(255, 253, 249, 0.98), rgba(247, 243, 236, 0.98));
-      border: 1px solid rgba(77, 53, 28, 0.14);
+      border-radius: 12px;
+      background: var(--card-strong);
+      border: 1px solid var(--line);
       color: var(--text);
-      box-shadow: var(--shadow);
+      box-shadow: none;
       position: relative;
       overflow: hidden;
     }
 
     .hero::after {
-      content: "";
-      position: absolute;
-      inset: auto -60px -80px auto;
-      width: 220px;
-      height: 220px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(163, 67, 38, 0.12), transparent 70%);
-      filter: blur(4px);
+      display: none;
     }
 
     .hero h1 {
       margin: 0;
-      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
-      font-size: clamp(1.5rem, 4vw, 2.2rem);
-      letter-spacing: 0.04em;
+      font-size: clamp(1.3rem, 3vw, 1.6rem);
+      letter-spacing: 0.02em;
       color: var(--text);
     }
 
@@ -172,20 +142,21 @@
     }
 
     .tabs {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      display: flex;
+      gap: 0;
       margin: 10px 0 14px;
+      border-bottom: 1px solid var(--line);
     }
 
     .tab-btn {
-      border: 1px solid rgba(191, 167, 58, 0.4);
-      border-radius: 8px;
-      padding: 10px 8px;
-      background: linear-gradient(180deg, rgba(21, 21, 21, 0.96), rgba(34, 34, 34, 0.96));
-      color: #f0ebc9;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
-      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+      border: none;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      padding: 10px 16px;
+      background: none;
+      color: var(--sub);
+      box-shadow: none;
+      transition: color 0.16s ease, border-color 0.16s ease;
     }
 
     .tab-btn:hover {
@@ -193,9 +164,9 @@
     }
 
     .tab-btn.is-active {
-      color: #131313;
-      background: linear-gradient(180deg, #f0e17c, #ae942f);
-      border-color: rgba(234, 214, 105, 0.72);
+      color: var(--text);
+      background: none;
+      border-bottom-color: var(--text);
     }
 
     .tab-panel {
@@ -226,10 +197,9 @@
     .card {
       position: relative;
       border: 1px solid var(--line);
-      border-radius: 10px;
-      background: var(--panel-glow), var(--card);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      background: var(--card);
+      box-shadow: none;
       padding: 14px;
       overflow: hidden;
     }
@@ -260,9 +230,36 @@
     .fortune-layout {
       display: grid;
       gap: 14px;
-      grid-template-columns: 1fr;
-      max-width: 760px;
+      max-width: 740px;
       margin: 0 auto;
+    }
+
+    .fortune-view-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 14px;
+    }
+
+    .fortune-view-btn {
+      min-height: 40px;
+      padding: 8px 16px;
+      border-radius: 0;
+      border: none;
+      border-bottom: 2px solid transparent;
+      background: none;
+      color: var(--sub);
+      box-shadow: none;
+    }
+
+    .fortune-view-btn.is-active {
+      color: var(--text);
+      border-bottom-color: var(--text);
+      font-weight: 700;
+    }
+
+    .fortune-view-panel[hidden] {
+      display: none !important;
     }
 
     .input-grid,
@@ -451,7 +448,7 @@
     }
 
     .pill-grid {
-      overflow-x: auto;
+      overflow: hidden;
       margin-top: 14px;
       border: 1px solid var(--line);
       border-radius: 14px;
@@ -460,8 +457,8 @@
 
     .pill-table {
       width: 100%;
-      min-width: 760px;
       border-collapse: collapse;
+      table-layout: fixed;
     }
 
     .pill-table th,
@@ -500,7 +497,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 62px;
+      width: 100%;
       min-height: 38px;
       padding: 6px 10px;
       border: 1px solid rgba(163, 67, 38, 0.12);
@@ -535,6 +532,16 @@
       font-size: 0.96rem;
       font-weight: 700;
       color: var(--text);
+    }
+
+    .person-input-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .person-input-panel small {
+      color: var(--sub);
+      font-weight: 400;
     }
 
     .soft-divider {
@@ -706,21 +713,17 @@
     }
 
     .timeline {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 4px;
       margin-top: 14px;
-      scroll-snap-type: x proximity;
     }
 
     .taiun-card {
-      flex: 0 0 180px;
       padding: 16px 15px;
       border-radius: 18px;
       border: 1px solid var(--line);
       background: var(--card-strong);
-      scroll-snap-align: start;
       position: relative;
       overflow: hidden;
     }
@@ -751,12 +754,10 @@
     }
 
     .trend-card {
-      flex: 0 0 220px;
       padding: 16px 15px;
       border-radius: 18px;
       border: 1px solid var(--line);
       background: var(--card-strong);
-      scroll-snap-align: start;
     }
 
     .trend-card.is-current {
@@ -844,40 +845,35 @@
     }
 
     .reference-layout {
-      background:
-        linear-gradient(180deg, rgba(10, 10, 10, 0.96), rgba(22, 22, 22, 0.96)),
-        linear-gradient(180deg, #111, #171717);
-      border-color: rgba(154, 139, 44, 0.48);
-      color: #f3efc9;
-      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
+      background: var(--card-strong);
+      border-color: var(--line);
+      color: var(--text);
+      box-shadow: none;
     }
 
     .reference-layout h2,
     .reference-layout h3,
     .reference-layout h4 {
-      color: #f4e98b;
+      color: var(--text);
     }
 
     .reference-layout h2 {
-      margin: -14px -14px 12px;
-      padding: 8px 12px;
-      background: linear-gradient(180deg, rgba(138, 124, 34, 0.95), rgba(104, 91, 19, 0.95));
-      color: #fbf6d7;
-      border-bottom: 1px solid rgba(214, 195, 92, 0.3);
+      margin: 0 0 12px;
+      padding: 0 0 8px;
+      background: none;
+      color: var(--text);
+      border-bottom: 1px solid var(--line);
     }
 
     .reference-layout .section-note,
     .reference-layout .summary-card p,
     .reference-layout .taiun-card p,
     .reference-layout .trend-card p,
-    .reference-layout .note-item {
-      color: #d8d1a4;
-    }
-
+    .reference-layout .note-item,
     .reference-layout .field label,
     .reference-layout .hint-text,
     .reference-layout .status {
-      color: #d8d1a4;
+      color: var(--sub);
     }
 
     .reference-layout .field input,
@@ -885,121 +881,125 @@
     .reference-layout .field textarea,
     .reference-layout .toggle-check,
     .reference-layout .segmented {
-      background: rgba(26, 26, 26, 0.94);
-      border-color: rgba(154, 139, 44, 0.34);
-      color: #f7f2d5;
+      background: var(--card);
+      border-color: var(--line);
+      color: var(--text);
     }
 
     .reference-layout .segmented span {
-      color: #d8d1a4;
+      color: var(--sub);
     }
 
     .reference-layout .segmented input:checked + span {
-      color: #141414;
-      background: linear-gradient(180deg, #f0e17c, #ae942f);
+      color: #fff;
+      background: #1f1f1f;
     }
 
     .reference-layout .btn-secondary,
     .reference-layout .btn-ghost {
-      background: linear-gradient(180deg, rgba(31, 31, 31, 0.98), rgba(18, 18, 18, 0.98));
-      border-color: rgba(154, 139, 44, 0.34);
-      color: #f7f2d5;
+      background: var(--card-strong);
+      border-color: var(--line);
+      color: var(--text);
     }
 
     .reference-layout .btn-primary {
-      color: #141414;
-      background: linear-gradient(180deg, #f0e17c, #ae942f);
-      box-shadow: 0 12px 24px rgba(174, 148, 47, 0.16);
+      color: #fff;
+      background: #1f1f1f;
+      box-shadow: none;
     }
 
     .reference-layout .pill-grid,
     .reference-layout .summary-card,
     .reference-layout .taiun-card,
     .reference-layout .trend-card {
-      background: rgba(23, 23, 23, 0.92);
-      border-color: rgba(154, 139, 44, 0.38);
+      background: var(--card);
+      border-color: var(--line);
     }
 
     .reference-layout .pill-table thead th,
     .reference-layout .pill-row-head {
-      background: rgba(123, 112, 32, 0.8);
-      color: #fbf6d4;
+      background: var(--bg-strong);
+      color: var(--sub);
     }
 
     .reference-layout .pill-table th.is-month-column,
     .reference-layout .pill-table td.is-month-column {
-      background: rgba(154, 139, 44, 0.18);
+      background: rgba(230, 241, 251, 0.65);
     }
 
     .reference-layout .pill-cell {
-      background: rgba(32, 32, 32, 0.9);
-      border-color: rgba(154, 139, 44, 0.3);
-      color: #f7f2d5;
+      background: var(--card-strong);
+      border-color: var(--line);
+      color: var(--text);
     }
 
     .reference-layout .pill-cell.is-month-focus {
-      background: linear-gradient(180deg, rgba(199, 169, 61, 0.34), rgba(64, 49, 7, 0.56));
-      border-color: rgba(224, 198, 98, 0.52);
-      color: #fff8dc;
+      background: rgba(230, 241, 251, 0.92);
+      border-color: rgba(24, 95, 165, 0.2);
+      color: #185fa5;
     }
 
     .reference-layout .pill-cell.is-kuubo {
-      background: rgba(110, 39, 39, 0.72);
-      border-color: rgba(220, 122, 122, 0.54);
-      color: #fff1f1;
+      background: rgba(250, 238, 218, 0.95);
+      border-color: rgba(133, 79, 11, 0.18);
+      color: #854f0b;
     }
 
     .reference-layout .summary-card.is-month-focus {
-      background: linear-gradient(180deg, rgba(199, 169, 61, 0.24), rgba(31, 29, 15, 0.92));
-      border-color: rgba(224, 198, 98, 0.48);
-    }
-
-    .reference-layout .result-mode-switch {
-      background: rgba(26, 26, 26, 0.94);
-      border-color: rgba(154, 139, 44, 0.34);
-    }
-
-    .reference-layout .mode-switch-btn {
-      color: #d8d1a4;
-    }
-
-    .reference-layout .mode-switch-btn.is-active {
-      color: #141414;
-      background: linear-gradient(180deg, #f0e17c, #ae942f);
-      box-shadow: none;
+      background: rgba(230, 241, 251, 0.92);
+      border-color: rgba(24, 95, 165, 0.2);
     }
 
     .reference-layout .subsection-title {
-      color: #f4e98b;
+      color: var(--text);
     }
 
     .reference-layout .trend-pill {
-      background: rgba(199, 169, 61, 0.16);
-      color: #f4e98b;
+      background: rgba(32, 53, 74, 0.08);
+      color: var(--ink);
     }
 
     .reference-layout .rel-blue {
-      background: rgba(31, 70, 123, 0.54);
-      color: #b8d5ff;
-      border-color: rgba(115, 167, 245, 0.34);
+      background: #e6f1fb;
+      color: #185fa5;
+      border-color: rgba(24, 95, 165, 0.2);
     }
 
     .reference-layout .rel-red {
-      background: rgba(104, 32, 32, 0.56);
-      color: #ffb4b4;
-      border-color: rgba(228, 116, 116, 0.34);
+      background: #fcebeb;
+      color: #a32d2d;
+      border-color: rgba(163, 45, 45, 0.2);
     }
 
     .reference-layout .rel-amber {
-      background: rgba(117, 86, 25, 0.62);
-      color: #f3d588;
-      border-color: rgba(227, 186, 88, 0.34);
+      background: #faeeda;
+      color: #854f0b;
+      border-color: rgba(133, 79, 11, 0.2);
     }
 
     .reference-layout .rel-green {
-      background: rgba(43, 90, 46, 0.58);
-      color: #bfe4b9;
-      border-color: rgba(124, 198, 130, 0.34);
+      background: #eaf3de;
+      color: #3b6d11;
+      border-color: rgba(59, 109, 17, 0.2);
+    }
+
+    .result-person-tabs {
+      display: flex;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+
+    .result-person-tab {
+      background: transparent;
+      border-color: var(--line);
+      color: var(--sub);
+      box-shadow: none;
+    }
+
+    .result-person-tab.is-active {
+      background: #1f1f1f;
+      border-color: #1f1f1f;
+      color: #fff;
     }
 
     .history-controls {
@@ -1175,13 +1175,6 @@
       display: none !important;
     }
 
-    @media (min-width: 980px) {
-      .fortune-layout {
-        grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
-        align-items: start;
-      }
-    }
-
     @media (max-width: 720px) {
       .app-shell {
         width: min(100% - 16px, 100%);
@@ -1202,6 +1195,32 @@
 
       .tab-btn {
         padding: 11px 6px;
+      }
+
+      .pill-table th,
+      .pill-table td {
+        padding: 6px 4px;
+        font-size: 0.74rem;
+      }
+
+      .pill-row-head {
+        min-width: 60px;
+        font-size: 0.7rem;
+      }
+
+      .pill-cell {
+        min-height: 32px;
+        padding: 4px 5px;
+        font-size: 0.74rem;
+      }
+
+      .rel-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+
+      .timeline {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -1229,110 +1248,198 @@
 
     <section class="tab-panel" id="tab-fortune" data-tab-panel="fortune">
       <div class="fortune-layout">
+        <div class="fortune-view-tabs" aria-label="入力と結果の切替">
+          <button class="btn fortune-view-btn is-active" type="button" data-fortune-view="input">入力</button>
+          <button class="btn fortune-view-btn" type="button" data-fortune-view="result">鑑定結果</button>
+        </div>
+        <div class="fortune-view-panel" id="fortuneViewInput">
         <div class="grid">
           <article class="card reference-layout">
             <h2>入力</h2>
             <p class="section-note">
-              直接入力と逆算入力を切り替えられます。出生時刻が不明な場合は、時柱のみ「不明」で処理します。
+              本人は必須、相手は任意です。片方だけでも占えます。保存済みの命式は履歴から本人欄・相手欄へ読み戻せます。
             </p>
 
-            <div class="field">
-              <label for="nameInput">名前（任意）</label>
-              <input id="nameInput" type="text" maxlength="60" placeholder="例: 山田 太郎">
+            <div class="person-input-stack">
+              <section class="person-input-panel" data-person-slot="primary">
+                <h3 class="subsection-title">本人</h3>
+                <div class="field">
+                  <label for="primaryNameInput">名前（任意）</label>
+                  <input id="primaryNameInput" type="text" maxlength="60" placeholder="例: 山田 太郎">
+                </div>
+                <div class="field">
+                  <label>生年月日の入力方法</label>
+                  <div class="segmented" role="radiogroup" aria-label="本人の生年月日の入力方法">
+                    <label>
+                      <input type="radio" name="primaryBirthInputMode" value="direct" checked>
+                      <span>直接入力</span>
+                    </label>
+                    <label>
+                      <input type="radio" name="primaryBirthInputMode" value="reverse">
+                      <span>年齢から逆算</span>
+                    </label>
+                  </div>
+                </div>
+                <div id="primaryDirectInputPanel">
+                  <div class="input-grid">
+                    <div class="field">
+                      <label for="primaryBirthYearInput">年</label>
+                      <input id="primaryBirthYearInput" type="number" min="1900" max="2100" placeholder="1990">
+                    </div>
+                    <div class="field">
+                      <label for="primaryBirthMonthInput">月</label>
+                      <select id="primaryBirthMonthInput"></select>
+                    </div>
+                    <div class="field">
+                      <label for="primaryBirthDayInput">日</label>
+                      <select id="primaryBirthDayInput"></select>
+                    </div>
+                  </div>
+                </div>
+                <div id="primaryReverseInputPanel" class="hidden">
+                  <div class="reverse-grid">
+                    <div class="field">
+                      <label for="primaryCurrentAgeInput">今の年齢</label>
+                      <input id="primaryCurrentAgeInput" type="number" min="0" max="130" placeholder="28">
+                    </div>
+                    <div class="field">
+                      <label for="primaryBirthdayMonthInput">誕生日の月</label>
+                      <select id="primaryBirthdayMonthInput"></select>
+                    </div>
+                    <div class="field">
+                      <label for="primaryBirthdayDayInput">誕生日の日</label>
+                      <select id="primaryBirthdayDayInput"></select>
+                    </div>
+                  </div>
+                  <p class="hint-text" id="primaryReversePreviewText">逆算結果: 未計算</p>
+                </div>
+                <div class="meta-grid" style="margin-top: 14px;">
+                  <div class="field">
+                    <label for="primaryBirthTimeInput">出生時刻</label>
+                    <input id="primaryBirthTimeInput" type="time">
+                  </div>
+                  <div class="field">
+                    <label for="primaryBirthPlaceInput">出生地（時刻入力時は必須）</label>
+                    <input id="primaryBirthPlaceInput" type="text" list="birthPlaceOptions" placeholder="例: 東京都 / 大阪 / 那覇">
+                  </div>
+                  <div class="field">
+                    <label for="primaryGenderInput">性別</label>
+                    <select id="primaryGenderInput">
+                      <option value="">選択してください</option>
+                      <option value="male">男性</option>
+                      <option value="female">女性</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="inline-controls" style="margin-top: 12px;">
+                  <label class="toggle-check" for="primaryBirthTimeUnknownInput">
+                    <input id="primaryBirthTimeUnknownInput" type="checkbox">
+                    <span>出生時刻は不明</span>
+                  </label>
+                </div>
+              </section>
+
+              <hr class="soft-divider">
+
+              <section class="person-input-panel" data-person-slot="secondary">
+                <h3 class="subsection-title">相手 <small>任意</small></h3>
+                <div class="field">
+                  <label for="secondaryNameInput">名前（任意）</label>
+                  <input id="secondaryNameInput" type="text" maxlength="60" placeholder="例: 相手の名前">
+                </div>
+                <div class="field">
+                  <label>生年月日の入力方法</label>
+                  <div class="segmented" role="radiogroup" aria-label="相手の生年月日の入力方法">
+                    <label>
+                      <input type="radio" name="secondaryBirthInputMode" value="direct" checked>
+                      <span>直接入力</span>
+                    </label>
+                    <label>
+                      <input type="radio" name="secondaryBirthInputMode" value="reverse">
+                      <span>年齢から逆算</span>
+                    </label>
+                  </div>
+                </div>
+                <div id="secondaryDirectInputPanel">
+                  <div class="input-grid">
+                    <div class="field">
+                      <label for="secondaryBirthYearInput">年</label>
+                      <input id="secondaryBirthYearInput" type="number" min="1900" max="2100" placeholder="1990">
+                    </div>
+                    <div class="field">
+                      <label for="secondaryBirthMonthInput">月</label>
+                      <select id="secondaryBirthMonthInput"></select>
+                    </div>
+                    <div class="field">
+                      <label for="secondaryBirthDayInput">日</label>
+                      <select id="secondaryBirthDayInput"></select>
+                    </div>
+                  </div>
+                </div>
+                <div id="secondaryReverseInputPanel" class="hidden">
+                  <div class="reverse-grid">
+                    <div class="field">
+                      <label for="secondaryCurrentAgeInput">今の年齢</label>
+                      <input id="secondaryCurrentAgeInput" type="number" min="0" max="130" placeholder="28">
+                    </div>
+                    <div class="field">
+                      <label for="secondaryBirthdayMonthInput">誕生日の月</label>
+                      <select id="secondaryBirthdayMonthInput"></select>
+                    </div>
+                    <div class="field">
+                      <label for="secondaryBirthdayDayInput">誕生日の日</label>
+                      <select id="secondaryBirthdayDayInput"></select>
+                    </div>
+                  </div>
+                  <p class="hint-text" id="secondaryReversePreviewText">逆算結果: 未計算</p>
+                </div>
+                <div class="meta-grid" style="margin-top: 14px;">
+                  <div class="field">
+                    <label for="secondaryBirthTimeInput">出生時刻</label>
+                    <input id="secondaryBirthTimeInput" type="time">
+                  </div>
+                  <div class="field">
+                    <label for="secondaryBirthPlaceInput">出生地（時刻入力時は必須）</label>
+                    <input id="secondaryBirthPlaceInput" type="text" list="birthPlaceOptions" placeholder="例: 東京都 / 大阪 / 那覇">
+                  </div>
+                  <div class="field">
+                    <label for="secondaryGenderInput">性別</label>
+                    <select id="secondaryGenderInput">
+                      <option value="">選択してください</option>
+                      <option value="male">男性</option>
+                      <option value="female">女性</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="inline-controls" style="margin-top: 12px;">
+                  <label class="toggle-check" for="secondaryBirthTimeUnknownInput">
+                    <input id="secondaryBirthTimeUnknownInput" type="checkbox">
+                    <span>出生時刻は不明</span>
+                  </label>
+                </div>
+              </section>
             </div>
 
-            <div class="field">
-              <label>生年月日の入力方法</label>
-              <div class="segmented" role="radiogroup" aria-label="生年月日の入力方法">
-                <label>
-                  <input type="radio" name="birthInputMode" value="direct" checked>
-                  <span>直接入力</span>
-                </label>
-                <label>
-                  <input type="radio" name="birthInputMode" value="reverse">
-                  <span>年齢から逆算</span>
-                </label>
-              </div>
-            </div>
-
-            <div id="directInputPanel">
-              <div class="input-grid">
-                <div class="field">
-                  <label for="birthYearInput">年</label>
-                  <input id="birthYearInput" type="number" min="1900" max="2100" placeholder="1990">
-                </div>
-                <div class="field">
-                  <label for="birthMonthInput">月</label>
-                  <select id="birthMonthInput"></select>
-                </div>
-                <div class="field">
-                  <label for="birthDayInput">日</label>
-                  <select id="birthDayInput"></select>
-                </div>
-              </div>
-            </div>
-
-            <div id="reverseInputPanel" class="hidden">
-              <div class="reverse-grid">
-                <div class="field">
-                  <label for="currentAgeInput">今の年齢</label>
-                  <input id="currentAgeInput" type="number" min="0" max="130" placeholder="28">
-                </div>
-                <div class="field">
-                  <label for="birthdayMonthInput">誕生日の月</label>
-                  <select id="birthdayMonthInput"></select>
-                </div>
-                <div class="field">
-                  <label for="birthdayDayInput">誕生日の日</label>
-                  <select id="birthdayDayInput"></select>
-                </div>
-              </div>
-              <p class="hint-text" id="reversePreviewText">逆算結果: 未計算</p>
-            </div>
-
-            <div class="meta-grid" style="margin-top: 14px;">
-              <div class="field">
-                <label for="birthTimeInput">出生時刻</label>
-                <input id="birthTimeInput" type="time">
-              </div>
-              <div class="field">
-                <label for="birthPlaceInput">出生地（時刻入力時は必須）</label>
-                <input id="birthPlaceInput" type="text" list="birthPlaceOptions" placeholder="例: 東京都 / 大阪 / 那覇">
-              </div>
-              <div class="field">
-                <label for="genderInput">性別</label>
-                <select id="genderInput">
-                  <option value="">選択してください</option>
-                  <option value="male">男性</option>
-                  <option value="female">女性</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="zoukanModeInput">蔵干モード</label>
-                <select id="zoukanModeInput">
-                  <option value="honki">本気のみ</option>
-                  <option value="custom">流派式（按分）</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="inline-controls" style="margin-top: 12px;">
-              <label class="toggle-check" for="birthTimeUnknownInput">
-                <input id="birthTimeUnknownInput" type="checkbox">
-                <span>出生時刻は不明</span>
-              </label>
+            <div class="field" style="margin-top: 14px;">
+              <label for="zoukanModeInput">蔵干モード</label>
+              <select id="zoukanModeInput">
+                <option value="honki">本気のみ</option>
+                <option value="custom">流派式（按分）</option>
+              </select>
             </div>
 
             <div class="actions">
               <button class="btn btn-primary" type="button" id="calculateBtn">命式を算出する</button>
-              <button class="btn btn-secondary" type="button" id="saveCurrentBtn">履歴に保存</button>
+              <button class="btn btn-secondary" type="button" id="saveCurrentBtn">履歴名を変更</button>
               <button class="btn btn-ghost" type="button" id="clearFormBtn">入力をクリア</button>
             </div>
 
             <div class="status" id="fortuneStatus"></div>
           </article>
         </div>
+        </div>
 
+        <div class="fortune-view-panel" id="fortuneViewResult" hidden>
         <div class="grid">
           <article class="card reference-layout">
             <h2>命式</h2>
@@ -1341,12 +1448,9 @@
             </p>
             <div id="resultEmptyState" class="section-note">まだ計算されていません。</div>
             <div id="resultPanel" class="hidden">
-              <div class="result-toggle-bar">
-                <span class="result-toggle-label">蔵干表示</span>
-                <div class="result-mode-switch" id="resultZoukanModeSwitch">
-                  <button class="btn mode-switch-btn is-active" type="button" data-result-zoukan-mode="honki">本気のみ</button>
-                  <button class="btn mode-switch-btn" type="button" data-result-zoukan-mode="custom">通常モード</button>
-                </div>
+              <div class="result-person-tabs hidden" id="resultPersonTabs">
+                <button class="btn result-person-tab is-active" type="button" data-result-person="primary">本人</button>
+                <button class="btn result-person-tab" type="button" data-result-person="secondary">相手</button>
               </div>
               <div class="summary-grid" id="resultSummaryGrid"></div>
               <div class="pill-grid">
@@ -1388,6 +1492,7 @@
             <div id="dayLuckMeta" class="section-note">まだ計算されていません。</div>
             <div class="timeline" id="dayLuckTimeline"></div>
           </article>
+        </div>
         </div>
       </div>
     </section>
@@ -2447,8 +2552,9 @@
           const yearPillar = getYearPillarForDate(sampleDate);
           const monthPillar = getMonthPillarForDate(sampleDate, yearPillar.tenkan);
           const zoukan = HONKI_ZOUKAN_MAP[monthPillar.chishi] || EMPTY_DISPLAY;
+          const termParts = toJstParts(term.date);
           list.push({
-            label: `${term.name}〜${nextTerm.name}`,
+            label: `${termParts.year}年${pad(termParts.month)}月`,
             tenkan: monthPillar.tenkan,
             chishi: monthPillar.chishi,
             tsuhensei: getTsuhenByStemPair(dayStem, monthPillar.tenkan) || EMPTY_DISPLAY,
@@ -2680,40 +2786,65 @@
         return;
       }
 
+      const PERSON_SLOTS = ["primary", "secondary"];
+      const SLOT_LABELS = { primary: "本人", secondary: "相手" };
       const state = loadState();
-      let currentResult = null;
-      let currentInput = null;
-      let currentHistoryId = "";
+      let currentSession = createEmptySession();
       let activeTooltipAnchor = null;
+
+      function createEmptySession() {
+        return {
+          inputs: { primary: null, secondary: null },
+          results: { primary: null, secondary: null },
+          historyIds: { primary: "", secondary: "" },
+          activeSlot: "primary"
+        };
+      }
+
+      function getPersonElements(slot) {
+        const cap = slot.charAt(0).toUpperCase() + slot.slice(1);
+        return {
+          slot,
+          nameInput: document.getElementById(`${slot}NameInput`),
+          birthYearInput: document.getElementById(`${slot}BirthYearInput`),
+          birthMonthInput: document.getElementById(`${slot}BirthMonthInput`),
+          birthDayInput: document.getElementById(`${slot}BirthDayInput`),
+          birthdayMonthInput: document.getElementById(`${slot}BirthdayMonthInput`),
+          birthdayDayInput: document.getElementById(`${slot}BirthdayDayInput`),
+          currentAgeInput: document.getElementById(`${slot}CurrentAgeInput`),
+          birthTimeInput: document.getElementById(`${slot}BirthTimeInput`),
+          birthPlaceInput: document.getElementById(`${slot}BirthPlaceInput`),
+          birthTimeUnknownInput: document.getElementById(`${slot}BirthTimeUnknownInput`),
+          genderInput: document.getElementById(`${slot}GenderInput`),
+          directInputPanel: document.getElementById(`${slot}DirectInputPanel`),
+          reverseInputPanel: document.getElementById(`${slot}ReverseInputPanel`),
+          reversePreviewText: document.getElementById(`${slot}ReversePreviewText`),
+          birthInputModeRadios: Array.from(document.querySelectorAll(`input[name="${slot}BirthInputMode"]`))
+        };
+      }
 
       const elements = {
         body: document.body,
         todayJstChip: document.getElementById("todayJstChip"),
         tabButtons: Array.from(document.querySelectorAll(".tab-btn")),
         tabPanels: Array.from(document.querySelectorAll("[data-tab-panel]")),
-        nameInput: document.getElementById("nameInput"),
-        birthYearInput: document.getElementById("birthYearInput"),
-        birthMonthInput: document.getElementById("birthMonthInput"),
-        birthDayInput: document.getElementById("birthDayInput"),
-        birthdayMonthInput: document.getElementById("birthdayMonthInput"),
-        birthdayDayInput: document.getElementById("birthdayDayInput"),
-        currentAgeInput: document.getElementById("currentAgeInput"),
-        birthTimeInput: document.getElementById("birthTimeInput"),
-        birthPlaceInput: document.getElementById("birthPlaceInput"),
+        fortuneViewButtons: Array.from(document.querySelectorAll("[data-fortune-view]")),
+        fortuneViewInput: document.getElementById("fortuneViewInput"),
+        fortuneViewResult: document.getElementById("fortuneViewResult"),
+        person: {
+          primary: getPersonElements("primary"),
+          secondary: getPersonElements("secondary")
+        },
         birthPlaceOptions: document.getElementById("birthPlaceOptions"),
-        birthTimeUnknownInput: document.getElementById("birthTimeUnknownInput"),
-        genderInput: document.getElementById("genderInput"),
         zoukanModeInput: document.getElementById("zoukanModeInput"),
-        directInputPanel: document.getElementById("directInputPanel"),
-        reverseInputPanel: document.getElementById("reverseInputPanel"),
-        reversePreviewText: document.getElementById("reversePreviewText"),
         calculateBtn: document.getElementById("calculateBtn"),
         saveCurrentBtn: document.getElementById("saveCurrentBtn"),
         clearFormBtn: document.getElementById("clearFormBtn"),
         fortuneStatus: document.getElementById("fortuneStatus"),
         resultEmptyState: document.getElementById("resultEmptyState"),
         resultPanel: document.getElementById("resultPanel"),
-        resultZoukanModeSwitch: document.getElementById("resultZoukanModeSwitch"),
+        resultPersonTabs: document.getElementById("resultPersonTabs"),
+        resultPersonTabButtons: Array.from(document.querySelectorAll("[data-result-person]")),
         resultSummaryGrid: document.getElementById("resultSummaryGrid"),
         pillarsTableBody: document.getElementById("pillarsTableBody"),
         resultNotes: document.getElementById("resultNotes"),
@@ -2742,15 +2873,18 @@
       init();
 
       function init() {
-        populateMonthDaySelect(elements.birthMonthInput, 12);
-        populateMonthDaySelect(elements.birthDayInput, 31);
-        populateMonthDaySelect(elements.birthdayMonthInput, 12);
-        populateMonthDaySelect(elements.birthdayDayInput, 31);
+        PERSON_SLOTS.forEach((slot) => {
+          const person = elements.person[slot];
+          populateMonthDaySelect(person.birthMonthInput, 12);
+          populateMonthDaySelect(person.birthDayInput, 31);
+          populateMonthDaySelect(person.birthdayMonthInput, 12);
+          populateMonthDaySelect(person.birthdayDayInput, 31);
+        });
         initializeBirthPlaceOptions();
         buildCustomZoukanEditor();
         applyStateToUi();
         bindEvents();
-        renderReversePreview();
+        renderSessionResults();
         renderHistory();
         updateTodayChip();
         setInterval(updateTodayChip, 60 * 1000);
@@ -2855,9 +2989,11 @@
         elements.zoukanModeInput.value = state.settings.defaultMode;
         elements.defaultZoukanModeInput.value = state.settings.defaultMode;
         elements.themeInput.value = state.settings.theme;
-        elements.birthTimeUnknownInput.checked = false;
-        syncBirthTimeUnknownState();
-        syncResultZoukanModeButtons(state.settings.defaultMode);
+        PERSON_SLOTS.forEach((slot) => {
+          syncBirthInputModeUi(slot);
+          syncBirthTimeUnknownState(slot);
+          renderReversePreview(slot);
+        });
         applyCustomZoukanToEditor();
       }
 
@@ -2893,19 +3029,37 @@
           });
         });
 
-        document.querySelectorAll('input[name="birthInputMode"]').forEach((radio) => {
-          radio.addEventListener("change", syncBirthInputModeUi);
-          radio.addEventListener("change", renderReversePreview);
+        elements.fortuneViewButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            switchFortuneView(button.dataset.fortuneView);
+          });
         });
 
-        elements.birthTimeUnknownInput.addEventListener("change", syncBirthTimeUnknownState);
-        elements.currentAgeInput.addEventListener("input", renderReversePreview);
-        elements.birthdayMonthInput.addEventListener("change", renderReversePreview);
-        elements.birthdayDayInput.addEventListener("change", renderReversePreview);
+        PERSON_SLOTS.forEach((slot) => {
+          const person = elements.person[slot];
+          person.birthInputModeRadios.forEach((radio) => {
+            radio.addEventListener("change", () => {
+              syncBirthInputModeUi(slot);
+              renderReversePreview(slot);
+            });
+          });
+          person.birthTimeUnknownInput.addEventListener("change", () => {
+            syncBirthTimeUnknownState(slot);
+          });
+          person.currentAgeInput.addEventListener("input", () => renderReversePreview(slot));
+          person.birthdayMonthInput.addEventListener("change", () => renderReversePreview(slot));
+          person.birthdayDayInput.addEventListener("change", () => renderReversePreview(slot));
+        });
+
+        elements.resultPersonTabButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            setActiveResultSlot(button.dataset.resultPerson);
+          });
+        });
+
         elements.calculateBtn.addEventListener("click", handleCalculate);
         elements.saveCurrentBtn.addEventListener("click", handleSaveCurrent);
         elements.clearFormBtn.addEventListener("click", clearForm);
-        elements.resultZoukanModeSwitch.addEventListener("click", handleResultZoukanModeSwitch);
         elements.historySearchInput.addEventListener("input", renderHistory);
         elements.exportJsonBtn.addEventListener("click", exportJson);
         elements.importJsonBtn.addEventListener("click", () => elements.importJsonInput.click());
@@ -2926,36 +3080,45 @@
 
       function updateTodayChip() {
         elements.todayJstChip.textContent = `JST基準日: ${getTodayJstDateKey()}`;
-        renderReversePreview();
+        PERSON_SLOTS.forEach((slot) => renderReversePreview(slot));
       }
 
-      function getSelectedBirthInputMode() {
-        const checked = document.querySelector('input[name="birthInputMode"]:checked');
+      function getSelectedBirthInputMode(slot) {
+        const checked = elements.person[slot].birthInputModeRadios.find((radio) => radio.checked);
         return checked ? checked.value : "direct";
       }
 
-      function syncBirthInputModeUi() {
-        const mode = getSelectedBirthInputMode();
-        elements.directInputPanel.classList.toggle("hidden", mode !== "direct");
-        elements.reverseInputPanel.classList.toggle("hidden", mode !== "reverse");
+      function setBirthInputMode(slot, mode) {
+        elements.person[slot].birthInputModeRadios.forEach((radio) => {
+          radio.checked = radio.value === mode;
+        });
       }
 
-      function syncBirthTimeUnknownState() {
-        const disabled = elements.birthTimeUnknownInput.checked;
-        elements.birthTimeInput.disabled = disabled;
-        elements.birthPlaceInput.disabled = disabled;
+      function syncBirthInputModeUi(slot) {
+        const person = elements.person[slot];
+        const mode = getSelectedBirthInputMode(slot);
+        person.directInputPanel.classList.toggle("hidden", mode !== "direct");
+        person.reverseInputPanel.classList.toggle("hidden", mode !== "reverse");
+      }
+
+      function syncBirthTimeUnknownState(slot) {
+        const person = elements.person[slot];
+        const disabled = person.birthTimeUnknownInput.checked;
+        person.birthTimeInput.disabled = disabled;
+        person.birthPlaceInput.disabled = disabled;
         if (disabled) {
-          elements.birthTimeInput.value = "";
-          elements.birthPlaceInput.value = "";
+          person.birthTimeInput.value = "";
+          person.birthPlaceInput.value = "";
         }
       }
 
-      function renderReversePreview() {
-        const ageRaw = elements.currentAgeInput.value.trim();
-        const monthRaw = elements.birthdayMonthInput.value;
-        const dayRaw = elements.birthdayDayInput.value;
+      function renderReversePreview(slot) {
+        const person = elements.person[slot];
+        const ageRaw = person.currentAgeInput.value.trim();
+        const monthRaw = person.birthdayMonthInput.value;
+        const dayRaw = person.birthdayDayInput.value;
         if (!ageRaw || !monthRaw || !dayRaw) {
-          elements.reversePreviewText.textContent = "逆算結果: 年齢と誕生日を入れると生年月日を表示します。";
+          person.reversePreviewText.textContent = "逆算結果: 年齢と誕生日を入れると生年月日を表示します。";
           return;
         }
         const age = Number(ageRaw);
@@ -2963,77 +3126,100 @@
         const day = Number(dayRaw);
         const today = getNowJstParts();
         if (!Number.isInteger(age) || age < 0 || age > 130 || !Number.isInteger(month) || !Number.isInteger(day)) {
-          elements.reversePreviewText.textContent = "逆算結果: 年齢と誕生日を入れると生年月日を表示します。";
+          person.reversePreviewText.textContent = "逆算結果: 年齢と誕生日を入れると生年月日を表示します。";
           return;
         }
         const resolved = resolveBirthDateFromAgeInput(age, month, day, today);
         if (!resolved) {
-          elements.reversePreviewText.textContent = "逆算結果: 入力の整合性が取れません。";
+          person.reversePreviewText.textContent = "逆算結果: 入力の整合性が取れません。";
           return;
         }
-        elements.reversePreviewText.textContent = `逆算結果: ${formatDateParts(resolved)}（JST基準日 ${formatDateParts(today)} で計算）`;
+        person.reversePreviewText.textContent = `逆算結果: ${formatDateParts(resolved)}（JST基準日 ${formatDateParts(today)} で計算）`;
       }
 
-      function readFormInput() {
-        const name = elements.nameInput.value.trim();
-        const mode = getSelectedBirthInputMode();
-        const birthTimeUnknown = elements.birthTimeUnknownInput.checked;
-        const gender = elements.genderInput.value;
+      function isPersonInputBlank(slot) {
+        const person = elements.person[slot];
+        const values = [
+          person.nameInput.value.trim(),
+          person.birthYearInput.value.trim(),
+          person.birthMonthInput.value,
+          person.birthDayInput.value,
+          person.currentAgeInput.value.trim(),
+          person.birthdayMonthInput.value,
+          person.birthdayDayInput.value,
+          person.birthTimeInput.value,
+          person.birthPlaceInput.value.trim(),
+          person.genderInput.value
+        ];
+        return values.every((value) => !value) && !person.birthTimeUnknownInput.checked;
+      }
+
+      function readPersonInput(slot, required) {
+        if (!required && isPersonInputBlank(slot)) {
+          return null;
+        }
+        const person = elements.person[slot];
+        const label = SLOT_LABELS[slot];
+        const name = person.nameInput.value.trim();
+        const mode = getSelectedBirthInputMode(slot);
+        const birthTimeUnknown = person.birthTimeUnknownInput.checked;
+        const gender = person.genderInput.value;
         const zoukanMode = elements.zoukanModeInput.value === "custom" ? "custom" : "honki";
-        const birthPlace = elements.birthPlaceInput.value.trim();
+        const birthPlace = person.birthPlaceInput.value.trim();
         let birthDate = null;
 
         if (mode === "direct") {
-          const yearRaw = elements.birthYearInput.value.trim();
-          const monthRaw = elements.birthMonthInput.value;
-          const dayRaw = elements.birthDayInput.value;
+          const yearRaw = person.birthYearInput.value.trim();
+          const monthRaw = person.birthMonthInput.value;
+          const dayRaw = person.birthDayInput.value;
           if (!yearRaw || !monthRaw || !dayRaw) {
-            return { error: "生年月日をすべて入力してください。" };
+            return { error: `${label}の生年月日をすべて入力してください。` };
           }
           const year = Number(yearRaw);
           const month = Number(monthRaw);
           const day = Number(dayRaw);
           if (!isValidDateParts(year, month, day)) {
-            return { error: "生年月日を正しく入力してください。" };
+            return { error: `${label}の生年月日を正しく入力してください。` };
           }
           birthDate = { year, month, day };
         } else {
-          const ageRaw = elements.currentAgeInput.value.trim();
-          const monthRaw = elements.birthdayMonthInput.value;
-          const dayRaw = elements.birthdayDayInput.value;
+          const ageRaw = person.currentAgeInput.value.trim();
+          const monthRaw = person.birthdayMonthInput.value;
+          const dayRaw = person.birthdayDayInput.value;
           if (!ageRaw || !monthRaw || !dayRaw) {
-            return { error: "今の年齢と誕生日をすべて入力してください。" };
+            return { error: `${label}の今の年齢と誕生日をすべて入力してください。` };
           }
           const age = Number(ageRaw);
           const month = Number(monthRaw);
           const day = Number(dayRaw);
           if (!Number.isInteger(age) || age < 0 || age > 130) {
-            return { error: "今の年齢を0〜130で入力してください。" };
+            return { error: `${label}の今の年齢を0〜130で入力してください。` };
           }
           const resolved = resolveBirthDateFromAgeInput(age, month, day, getNowJstParts());
           if (!resolved) {
-            return { error: "今の年齢と誕生日から生年月日を逆算できませんでした。" };
+            return { error: `${label}の今の年齢と誕生日から生年月日を逆算できませんでした。` };
           }
           birthDate = resolved;
         }
 
         if (!gender) {
-          return { error: "性別を選択してください。" };
+          return { error: `${label}の性別を選択してください。` };
         }
 
         let birthTime = null;
         if (!birthTimeUnknown) {
-          birthTime = parseTimeString(elements.birthTimeInput.value);
+          birthTime = parseTimeString(person.birthTimeInput.value);
           if (!birthTime) {
-            return { error: "出生時刻を入力するか、「不明」にチェックしてください。" };
+            return { error: `${label}の出生時刻を入力するか、「不明」にチェックしてください。` };
           }
           const longitudeResult = resolveLongitude(birthPlace);
           if (longitudeResult.error) {
-            return { error: longitudeResult.error };
+            return { error: `${label}は${longitudeResult.error}` };
           }
         }
 
         return {
+          slot,
           name,
           inputMode: mode,
           birthDate,
@@ -3045,47 +3231,66 @@
         };
       }
 
-      function syncResultZoukanModeButtons(mode) {
-        elements.resultZoukanModeSwitch.querySelectorAll("[data-result-zoukan-mode]").forEach((button) => {
-          button.classList.toggle("is-active", button.dataset.resultZoukanMode === mode);
-        });
+      function getAvailableResultSlots() {
+        return PERSON_SLOTS.filter((slot) => currentSession.results[slot]);
       }
 
-      function updateCurrentHistoryEntry(input, result) {
-        if (!currentHistoryId) return;
-        const entry = state.history.find((item) => item.id === currentHistoryId);
-        if (!entry) return;
-        entry.name = input.name;
-        entry.birthdate = formatDateParts(input.birthDate);
-        entry.birthtime = input.birthTime ? `${pad(input.birthTime.hour)}:${pad(input.birthTime.minute)}` : "";
-        entry.birthtimeUnknown = input.birthTimeUnknown;
-        entry.birthplace = input.birthPlace || "";
-        entry.gender = input.gender;
-        entry.inputMode = input.inputMode;
-        entry.zoukan_mode = input.zoukanMode;
-        entry.result = result;
-        entry.savedAt = new Date().toISOString();
+      function switchFortuneView(viewName) {
+        const nextView = viewName === "result" ? "result" : "input";
+        elements.fortuneViewButtons.forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.fortuneView === nextView);
+        });
+        elements.fortuneViewInput.hidden = nextView !== "input";
+        elements.fortuneViewResult.hidden = nextView !== "result";
       }
 
       function handleCalculate() {
-        const input = readFormInput();
-        if (input.error) {
-          setStatus(elements.fortuneStatus, input.error, "error");
+        const primaryInput = readPersonInput("primary", true);
+        if (primaryInput && primaryInput.error) {
+          setStatus(elements.fortuneStatus, primaryInput.error, "error");
+          return;
+        }
+
+        const secondaryInput = readPersonInput("secondary", false);
+        if (secondaryInput && secondaryInput.error) {
+          setStatus(elements.fortuneStatus, secondaryInput.error, "error");
           return;
         }
 
         try {
-          currentInput = cloneDeep(input);
-          currentResult = computeChart(currentInput, state.settings);
-          const historyEntry = createHistoryEntry(input, currentResult);
-          currentHistoryId = historyEntry.id;
-          state.history.unshift(historyEntry);
+          const nextSession = createEmptySession();
+          const newEntries = [];
+
+          [
+            ["primary", primaryInput],
+            ["secondary", secondaryInput]
+          ].forEach(([slot, input]) => {
+            if (!input) return;
+            const frozenInput = cloneDeep(input);
+            const result = computeChart(frozenInput, state.settings);
+            nextSession.inputs[slot] = frozenInput;
+            nextSession.results[slot] = result;
+            const historyEntry = createHistoryEntry(frozenInput, result);
+            nextSession.historyIds[slot] = historyEntry.id;
+            newEntries.push(historyEntry);
+          });
+
+          newEntries.slice().reverse().forEach((entry) => {
+            state.history.unshift(entry);
+          });
           state.history = state.history.slice(0, DEFAULT_HISTORY_LIMIT);
+          currentSession = nextSession;
+          currentSession.activeSlot = currentSession.results.primary ? "primary" : "secondary";
           saveState();
-          renderCurrentResult(currentInput, currentResult);
+          renderSessionResults();
           renderHistory();
-          syncResultZoukanModeButtons(currentInput.zoukanMode);
-          setStatus(elements.fortuneStatus, "命式を算出して履歴へ保存しました。", "success");
+          switchTab("fortune");
+          switchFortuneView("result");
+          setStatus(
+            elements.fortuneStatus,
+            newEntries.length > 1 ? "2人分の命式を算出して履歴へ保存しました。" : "命式を算出して履歴へ保存しました。",
+            "success"
+          );
         } catch (error) {
           setStatus(elements.fortuneStatus, error && error.message ? error.message : "命式の算出に失敗しました。", "error");
         }
@@ -3125,26 +3330,6 @@
         `;
       }
 
-      function handleResultZoukanModeSwitch(event) {
-        const button = event.target.closest("[data-result-zoukan-mode]");
-        if (!button || !currentInput) return;
-        const nextMode = button.dataset.resultZoukanMode === "custom" ? "custom" : "honki";
-        if (currentInput.zoukanMode === nextMode) return;
-        currentInput.zoukanMode = nextMode;
-        elements.zoukanModeInput.value = nextMode;
-        try {
-          currentResult = computeChart(currentInput, state.settings);
-          updateCurrentHistoryEntry(currentInput, currentResult);
-          saveState();
-          renderCurrentResult(currentInput, currentResult);
-          renderHistory();
-          syncResultZoukanModeButtons(nextMode);
-          setStatus(elements.fortuneStatus, `鑑定結果の蔵干モードを${nextMode === "custom" ? "通常" : "本気のみ"}に切り替えました。`, "success");
-        } catch (error) {
-          setStatus(elements.fortuneStatus, error && error.message ? error.message : "蔵干モードの切替に失敗しました。", "error");
-        }
-      }
-
       function renderTrendCard(item) {
         return `
           <article class="trend-card${item.isCurrent ? " is-current" : ""}">
@@ -3160,12 +3345,65 @@
         `;
       }
 
-      function renderCurrentResult(input, result) {
+      function resetResultOutput() {
+        elements.resultPanel.classList.add("hidden");
+        elements.resultEmptyState.classList.remove("hidden");
+        elements.resultPersonTabs.classList.add("hidden");
+        elements.resultSummaryGrid.innerHTML = "";
+        elements.pillarsTableBody.innerHTML = "";
+        elements.resultNotes.innerHTML = "";
+        elements.taiunTimeline.innerHTML = "";
+        elements.monthLuckTimeline.innerHTML = "";
+        elements.dayLuckTimeline.innerHTML = "";
+        elements.taiunMeta.textContent = "まだ計算されていません。";
+        elements.monthLuckMeta.textContent = "まだ計算されていません。";
+        elements.dayLuckMeta.textContent = "まだ計算されていません。";
+      }
+
+      function setActiveResultSlot(slot) {
+        const availableSlots = getAvailableResultSlots();
+        if (!availableSlots.length) {
+          currentSession.activeSlot = "primary";
+          resetResultOutput();
+          return;
+        }
+        currentSession.activeSlot = availableSlots.includes(slot) ? slot : availableSlots[0];
+        elements.resultPersonTabButtons.forEach((button) => {
+          const isActive = button.dataset.resultPerson === currentSession.activeSlot;
+          button.classList.toggle("is-active", isActive);
+        });
+        renderActiveResult();
+      }
+
+      function renderSessionResults() {
+        const availableSlots = getAvailableResultSlots();
+        if (!availableSlots.length) {
+          resetResultOutput();
+          return;
+        }
         elements.resultEmptyState.classList.add("hidden");
         elements.resultPanel.classList.remove("hidden");
+        elements.resultPersonTabs.classList.toggle("hidden", availableSlots.length < 2);
+        elements.resultPersonTabButtons.forEach((button) => {
+          button.classList.toggle("hidden", !availableSlots.includes(button.dataset.resultPerson));
+        });
+        if (!availableSlots.includes(currentSession.activeSlot)) {
+          currentSession.activeSlot = availableSlots[0];
+        }
+        setActiveResultSlot(currentSession.activeSlot);
+      }
 
-        const displayName = input.name || "未登録";
-        const birthTimeText = input.birthTimeUnknown ? "不明" : `${pad(input.birthTime.hour)}:${pad(input.birthTime.minute)}`;
+      function renderActiveResult() {
+        const slot = currentSession.activeSlot;
+        const input = currentSession.inputs[slot];
+        const result = currentSession.results[slot];
+        if (!input || !result) {
+          resetResultOutput();
+          return;
+        }
+
+        const displayName = input.name || SLOT_LABELS[slot];
+        const birthTimeText = input.birthTimeUnknown || !input.birthTime ? "不明" : `${pad(input.birthTime.hour)}:${pad(input.birthTime.minute)}`;
         const currentMonthItem = result.monthLuck.list.find((item) => item.isCurrent) || result.monthLuck.list[0];
         const currentDayItem = result.dayLuck.list.find((item) => item.isCurrent) || result.dayLuck.list[0];
         const kuuboText = result.kuubou.length ? result.kuubou.join("・") : EMPTY_DISPLAY;
@@ -3203,12 +3441,8 @@
             badges: currentDayItem ? currentDayItem.relationBadges : []
           },
           {
-            title: "節入り",
-            body: `${escapeHtml(result.meta.currentTermName)}: ${escapeHtml(result.meta.currentTermJst)}`
-          },
-          {
-            title: "立春",
-            body: `${escapeHtml(result.meta.liChunJst)}`
+            title: "月運の切替",
+            body: `${escapeHtml(formatDateTimeJst(result.monthLuck.currentStartDate))} 〜 ${escapeHtml(formatDateTimeJst(result.monthLuck.nextStartDate))}`
           }
         ].map((item) => {
           return `
@@ -3282,7 +3516,7 @@
         }).join("");
 
         elements.monthLuckMeta.textContent =
-          `現在の月運: ${result.monthLuck.currentTermName}入り ${formatDateTimeJst(result.monthLuck.currentStartDate)} / 次の切替: ${result.monthLuck.nextTermName} ${formatDateTimeJst(result.monthLuck.nextStartDate)}`;
+          `現在の月運: ${formatDateTimeJst(result.monthLuck.currentStartDate)} 〜 ${formatDateTimeJst(result.monthLuck.nextStartDate)}`;
         elements.monthLuckTimeline.innerHTML = result.monthLuck.list.map(renderTrendCard).join("");
 
         elements.dayLuckMeta.textContent =
@@ -3291,48 +3525,57 @@
       }
 
       function handleSaveCurrent() {
-        if (!currentHistoryId) {
+        const slot = currentSession.activeSlot;
+        const historyId = currentSession.historyIds[slot];
+        if (!historyId) {
           setStatus(elements.fortuneStatus, "先に命式を算出してください。", "warning");
           return;
         }
-        const entry = state.history.find((item) => item.id === currentHistoryId);
+        const entry = state.history.find((item) => item.id === historyId);
         if (!entry) {
           setStatus(elements.fortuneStatus, "最新の履歴が見つかりませんでした。", "error");
           return;
         }
-        const initialName = elements.nameInput.value.trim() || entry.name || "";
-        const name = window.prompt("履歴に保存する名前を入力してください。", initialName);
+        const initialName = (currentSession.inputs[slot] && currentSession.inputs[slot].name) || entry.name || "";
+        const name = window.prompt(`${SLOT_LABELS[slot]}の履歴名を入力してください。`, initialName);
         if (name == null) return;
         entry.name = name.trim();
         entry.savedAt = new Date().toISOString();
+        if (currentSession.inputs[slot]) {
+          currentSession.inputs[slot].name = entry.name;
+        }
+        elements.person[slot].nameInput.value = entry.name;
         saveState();
         renderHistory();
-        setStatus(elements.fortuneStatus, "履歴の名前を保存しました。", "success");
+        renderSessionResults();
+        setStatus(elements.fortuneStatus, "履歴名を保存しました。", "success");
+      }
+
+      function clearPersonForm(slot) {
+        const person = elements.person[slot];
+        person.nameInput.value = "";
+        person.birthYearInput.value = "";
+        person.birthMonthInput.value = "";
+        person.birthDayInput.value = "";
+        person.currentAgeInput.value = "";
+        person.birthdayMonthInput.value = "";
+        person.birthdayDayInput.value = "";
+        person.birthTimeInput.value = "";
+        person.birthPlaceInput.value = "";
+        person.birthTimeUnknownInput.checked = false;
+        person.genderInput.value = "";
+        setBirthInputMode(slot, "direct");
+        syncBirthInputModeUi(slot);
+        syncBirthTimeUnknownState(slot);
+        renderReversePreview(slot);
       }
 
       function clearForm() {
-        currentInput = null;
-        currentResult = null;
-        currentHistoryId = "";
-        elements.nameInput.value = "";
-        elements.birthYearInput.value = "";
-        elements.birthMonthInput.value = "";
-        elements.birthDayInput.value = "";
-        elements.currentAgeInput.value = "";
-        elements.birthdayMonthInput.value = "";
-        elements.birthdayDayInput.value = "";
-        elements.birthTimeInput.value = "";
-        elements.birthPlaceInput.value = "";
-        elements.birthTimeUnknownInput.checked = false;
-        elements.genderInput.value = "";
+        currentSession = createEmptySession();
+        PERSON_SLOTS.forEach((slot) => clearPersonForm(slot));
         elements.zoukanModeInput.value = state.settings.defaultMode;
-        document.querySelector('input[name="birthInputMode"][value="direct"]').checked = true;
-        syncBirthInputModeUi();
-        syncBirthTimeUnknownState();
-        syncResultZoukanModeButtons(state.settings.defaultMode);
-        elements.resultPanel.classList.add("hidden");
-        elements.resultEmptyState.classList.remove("hidden");
-        renderReversePreview();
+        renderSessionResults();
+        switchFortuneView("input");
         setStatus(elements.fortuneStatus, "", "");
       }
 
@@ -3369,7 +3612,7 @@
         });
 
         if (!items.length) {
-          elements.historyList.innerHTML = '<p class="history-empty">履歴はまだありません。</p>';
+          elements.historyList.innerHTML = `<p class="history-empty">${keyword ? "検索条件に一致する履歴がありません。" : "履歴はまだありません。"}</p>`;
           return;
         }
 
@@ -3418,6 +3661,8 @@
                   <textarea data-history-field="memo" placeholder="自由メモ">${escapeHtml(entry.memo)}</textarea>
                 </div>
                 <div class="history-actions">
+                  <button class="btn btn-secondary" type="button" data-history-action="load-primary">本人欄に読込</button>
+                  <button class="btn btn-secondary" type="button" data-history-action="load-secondary">相手欄に読込</button>
                   <button class="btn btn-secondary" type="button" data-history-action="save">変更を保存</button>
                   <button class="btn btn-danger" type="button" data-history-action="delete">削除</button>
                 </div>
@@ -3432,13 +3677,42 @@
             const container = button.closest("[data-history-id]");
             if (!container) return;
             const id = container.dataset.historyId;
-            if (button.dataset.historyAction === "save") {
+            if (button.dataset.historyAction === "load-primary") {
+              loadHistoryEntryIntoPerson(id, "primary");
+            } else if (button.dataset.historyAction === "load-secondary") {
+              loadHistoryEntryIntoPerson(id, "secondary");
+            } else if (button.dataset.historyAction === "save") {
               saveHistoryEntryEdits(id, container);
             } else if (button.dataset.historyAction === "delete") {
               deleteHistoryEntry(id);
             }
           });
         });
+      }
+
+      function loadHistoryEntryIntoPerson(id, slot) {
+        const entry = state.history.find((item) => item.id === id);
+        if (!entry) return;
+        const person = elements.person[slot];
+        const [year, month, day] = String(entry.birthdate || "").split("-").map((value) => Number(value));
+        person.nameInput.value = entry.name || "";
+        person.birthYearInput.value = Number.isInteger(year) ? String(year) : "";
+        person.birthMonthInput.value = Number.isInteger(month) ? String(month) : "";
+        person.birthDayInput.value = Number.isInteger(day) ? String(day) : "";
+        person.currentAgeInput.value = "";
+        person.birthdayMonthInput.value = "";
+        person.birthdayDayInput.value = "";
+        person.birthTimeInput.value = entry.birthtime || "";
+        person.birthPlaceInput.value = entry.birthplace || "";
+        person.birthTimeUnknownInput.checked = Boolean(entry.birthtimeUnknown);
+        person.genderInput.value = entry.gender === "female" ? "female" : "male";
+        setBirthInputMode(slot, "direct");
+        syncBirthInputModeUi(slot);
+        syncBirthTimeUnknownState(slot);
+        renderReversePreview(slot);
+        switchTab("fortune");
+        switchFortuneView("input");
+        setStatus(elements.fortuneStatus, `${SLOT_LABELS[slot]}欄に履歴を読み込みました。`, "success");
       }
 
       function saveHistoryEntryEdits(id, container) {
@@ -3453,8 +3727,14 @@
           ? tagsEl.value.split(",").map((item) => item.trim()).filter(Boolean)
           : entry.tags;
         entry.savedAt = new Date().toISOString();
+        PERSON_SLOTS.forEach((slot) => {
+          if (currentSession.historyIds[slot] === id && currentSession.inputs[slot]) {
+            currentSession.inputs[slot].name = entry.name;
+          }
+        });
         saveState();
         renderHistory();
+        renderSessionResults();
         setStatus(elements.historyStatus, "履歴を更新しました。", "success");
       }
 
@@ -3464,9 +3744,11 @@
         const name = entry.name || entry.birthdate;
         if (!window.confirm(`「${name}」の履歴を削除しますか？`)) return;
         state.history = state.history.filter((item) => item.id !== id);
-        if (currentHistoryId === id) {
-          currentHistoryId = "";
-        }
+        PERSON_SLOTS.forEach((slot) => {
+          if (currentSession.historyIds[slot] === id) {
+            currentSession.historyIds[slot] = "";
+          }
+        });
         saveState();
         renderHistory();
         setStatus(elements.historyStatus, "履歴を削除しました。", "success");
@@ -3522,7 +3804,7 @@
         }
         if (!window.confirm("履歴をすべて削除しますか？")) return;
         state.history = [];
-        currentHistoryId = "";
+        currentSession.historyIds = { primary: "", secondary: "" };
         saveState();
         renderHistory();
         setStatus(elements.historyStatus, "履歴を全削除しました。", "success");
@@ -3556,23 +3838,13 @@
         const fresh = cloneDeep(DEFAULT_STATE);
         state.settings = fresh.settings;
         state.history = [];
-        currentHistoryId = "";
-        currentResult = null;
-        currentInput = null;
+        currentSession = createEmptySession();
         saveState();
+        PERSON_SLOTS.forEach((slot) => clearPersonForm(slot));
         applyStateToUi();
         renderHistory();
-        elements.resultPanel.classList.add("hidden");
-        elements.resultEmptyState.classList.remove("hidden");
-        elements.resultNotes.innerHTML = "";
-        elements.pillarsTableBody.innerHTML = "";
-        elements.resultSummaryGrid.innerHTML = "";
-        elements.taiunTimeline.innerHTML = "";
-        elements.taiunMeta.textContent = "まだ計算されていません。";
-        elements.monthLuckTimeline.innerHTML = "";
-        elements.dayLuckTimeline.innerHTML = "";
-        elements.monthLuckMeta.textContent = "まだ計算されていません。";
-        elements.dayLuckMeta.textContent = "まだ計算されていません。";
+        renderSessionResults();
+        switchFortuneView("input");
         setStatus(elements.settingsStatus, "全データを初期化しました。", "success");
       }
 
