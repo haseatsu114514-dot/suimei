@@ -1,0 +1,3634 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>四柱推命パーソナルツール</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5efe3;
+      --bg-strong: #efe4d1;
+      --card: rgba(255, 251, 245, 0.92);
+      --card-strong: #fffdf8;
+      --line: rgba(77, 53, 28, 0.18);
+      --text: #2f2319;
+      --sub: #695646;
+      --accent: #a34326;
+      --accent-strong: #7c2e16;
+      --accent-soft: rgba(163, 67, 38, 0.12);
+      --ink: #20354a;
+      --ink-soft: rgba(32, 53, 74, 0.1);
+      --success: #2f7456;
+      --danger: #a32929;
+      --warning: #a06916;
+      --shadow: 0 18px 40px rgba(67, 43, 22, 0.12);
+      --tooltip-bg: rgba(0, 0, 0, 0.85);
+      --tooltip-text: #fff;
+      --tab-active: linear-gradient(135deg, #20354a, #355470);
+      --panel-glow: radial-gradient(circle at top right, rgba(163, 67, 38, 0.12), transparent 44%);
+    }
+
+    body[data-theme="dark"] {
+      color-scheme: dark;
+      --bg: #12191f;
+      --bg-strong: #1a232b;
+      --card: rgba(24, 34, 42, 0.9);
+      --card-strong: #1d2730;
+      --line: rgba(232, 221, 208, 0.14);
+      --text: #f5eadb;
+      --sub: #c4b6a7;
+      --accent: #db8452;
+      --accent-strong: #f2a573;
+      --accent-soft: rgba(219, 132, 82, 0.14);
+      --ink: #9ac0de;
+      --ink-soft: rgba(154, 192, 222, 0.12);
+      --success: #6bc09b;
+      --danger: #ef8f8f;
+      --warning: #f1cb77;
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.34);
+      --tooltip-bg: rgba(8, 12, 16, 0.92);
+      --tooltip-text: #fff;
+      --tab-active: linear-gradient(135deg, #355470, #547b9e);
+      --panel-glow: radial-gradient(circle at top right, rgba(219, 132, 82, 0.13), transparent 44%);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.45), transparent 32%),
+        linear-gradient(180deg, #ece8df, #ddd8cf 58%, #d5cfc6);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.26), transparent 22%),
+        repeating-linear-gradient(
+          0deg,
+          rgba(110, 98, 82, 0.03),
+          rgba(110, 98, 82, 0.03) 1px,
+          transparent 1px,
+          transparent 24px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          rgba(110, 98, 82, 0.02),
+          rgba(110, 98, 82, 0.02) 1px,
+          transparent 1px,
+          transparent 24px
+        );
+      opacity: 1;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app-shell {
+      width: min(740px, calc(100% - 20px));
+      margin: 0 auto;
+      padding: 10px 0 42px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      padding: 14px 16px 12px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255, 253, 249, 0.98), rgba(247, 243, 236, 0.98));
+      border: 1px solid rgba(77, 53, 28, 0.14);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -60px -80px auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(163, 67, 38, 0.12), transparent 70%);
+      filter: blur(4px);
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+
+    .hero p {
+      margin: 8px 0 0;
+      max-width: 720px;
+      color: var(--sub);
+      line-height: 1.6;
+      font-size: 0.94rem;
+    }
+
+    .hero-meta {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hero-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(77, 53, 28, 0.14);
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--sub);
+      font-size: 0.84rem;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
+
+    .tab-btn {
+      border: 1px solid rgba(191, 167, 58, 0.4);
+      border-radius: 8px;
+      padding: 10px 8px;
+      background: linear-gradient(180deg, rgba(21, 21, 21, 0.96), rgba(34, 34, 34, 0.96));
+      color: #f0ebc9;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+      transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .tab-btn.is-active {
+      color: #131313;
+      background: linear-gradient(180deg, #f0e17c, #ae942f);
+      border-color: rgba(234, 214, 105, 0.72);
+    }
+
+    .tab-panel {
+      display: block;
+      animation: panelFade 0.22s ease;
+    }
+
+    .tab-panel[hidden] {
+      display: none;
+    }
+
+    @keyframes panelFade {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .card {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel-glow), var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .card h2,
+    .card h3 {
+      margin: 0 0 10px;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .card h2 {
+      font-size: 1.08rem;
+    }
+
+    .card h3 {
+      font-size: 1rem;
+    }
+
+    .section-note {
+      margin: 0 0 14px;
+      color: var(--sub);
+      line-height: 1.65;
+      font-size: 0.95rem;
+    }
+
+    .fortune-layout {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1fr;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .input-grid,
+    .reverse-grid,
+    .meta-grid,
+    .settings-grid,
+    .summary-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .input-grid,
+    .summary-grid {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .reverse-grid,
+    .meta-grid {
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    }
+
+    .settings-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 0.9rem;
+      color: var(--sub);
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 11px 12px;
+      background: var(--card-strong);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .field textarea {
+      min-height: 94px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: rgba(163, 67, 38, 0.52);
+      box-shadow: 0 0 0 4px rgba(163, 67, 38, 0.12);
+    }
+
+    .segmented {
+      display: inline-grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      padding: 8px;
+      border-radius: 18px;
+      background: var(--bg-strong);
+      border: 1px solid var(--line);
+    }
+
+    .segmented label {
+      cursor: pointer;
+    }
+
+    .segmented input {
+      display: none;
+    }
+
+    .segmented span {
+      display: block;
+      text-align: center;
+      border-radius: 12px;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      color: var(--sub);
+      background: transparent;
+      transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+    }
+
+    .segmented input:checked + span {
+      color: #f8efe3;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      border-color: transparent;
+    }
+
+    .inline-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .toggle-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card-strong);
+      color: var(--text);
+    }
+
+    .toggle-check input {
+      width: auto;
+      margin: 0;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .btn {
+      border: 1px solid transparent;
+      border-radius: 14px;
+      padding: 11px 15px;
+      min-height: 44px;
+      transition: transform 0.16s ease, opacity 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      color: #fff6ef;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      box-shadow: 0 12px 24px rgba(163, 67, 38, 0.2);
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      background: var(--card-strong);
+      border-color: var(--line);
+    }
+
+    .btn-danger {
+      color: #fff4f4;
+      background: linear-gradient(135deg, #b74b4b, #8f2b2b);
+    }
+
+    .btn-ghost {
+      color: var(--ink);
+      background: rgba(32, 53, 74, 0.06);
+      border-color: rgba(32, 53, 74, 0.12);
+    }
+
+    .hint-text {
+      margin: 8px 0 0;
+      color: var(--sub);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .status {
+      min-height: 1.4em;
+      margin-top: 12px;
+      font-size: 0.92rem;
+      color: var(--sub);
+    }
+
+    .status.success {
+      color: var(--success);
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .status.warning {
+      color: var(--warning);
+    }
+
+    .pill-grid {
+      overflow-x: auto;
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card-strong);
+    }
+
+    .pill-table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+    }
+
+    .pill-table th,
+    .pill-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .pill-table tr:last-child th,
+    .pill-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pill-table thead th {
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      color: var(--ink);
+      background: rgba(32, 53, 74, 0.08);
+      white-space: nowrap;
+    }
+
+    .pill-table th.is-month-column,
+    .pill-table td.is-month-column {
+      background: rgba(163, 67, 38, 0.08);
+    }
+
+    .pill-row-head {
+      min-width: 92px;
+      color: var(--sub);
+      background: rgba(32, 53, 74, 0.05);
+      white-space: nowrap;
+    }
+
+    .pill-cell {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 62px;
+      min-height: 38px;
+      padding: 6px 10px;
+      border: 1px solid rgba(163, 67, 38, 0.12);
+      border-radius: 10px;
+      background: rgba(163, 67, 38, 0.05);
+      color: var(--text);
+    }
+
+    .pill-cell[data-tooltip] {
+      cursor: pointer;
+    }
+
+    .pill-cell.is-kuubo {
+      background: rgba(163, 41, 41, 0.12);
+      border-color: rgba(163, 41, 41, 0.24);
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .pill-cell.is-month-focus {
+      background: linear-gradient(180deg, rgba(163, 67, 38, 0.16), rgba(163, 67, 38, 0.06));
+      border-color: rgba(163, 67, 38, 0.3);
+      font-weight: 700;
+    }
+
+    .summary-grid {
+      margin-top: 14px;
+    }
+
+    .subsection-title {
+      margin: 18px 0 8px;
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .soft-divider {
+      height: 1px;
+      margin: 18px 0 16px;
+      background: var(--line);
+      border: none;
+    }
+
+    .result-toggle-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+
+    .result-toggle-label {
+      color: var(--sub);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .result-mode-switch {
+      display: inline-flex;
+      gap: 6px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--card-strong);
+    }
+
+    .mode-switch-btn {
+      min-height: 36px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--sub);
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    .mode-switch-btn.is-active {
+      color: #fff6ef;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      box-shadow: 0 8px 18px rgba(163, 67, 38, 0.18);
+    }
+
+    .summary-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      background: var(--card-strong);
+    }
+
+    .summary-card h3 {
+      margin-bottom: 8px;
+      font-size: 0.96rem;
+    }
+
+    .summary-card p {
+      margin: 0;
+      color: var(--sub);
+      line-height: 1.65;
+      font-size: 0.92rem;
+    }
+
+    .summary-card.is-month-focus {
+      border-color: rgba(163, 67, 38, 0.34);
+      background: linear-gradient(180deg, rgba(163, 67, 38, 0.15), rgba(163, 67, 38, 0.04));
+    }
+
+    .summary-card.is-month-focus p {
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .compatibility-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .compatibility-score-wrap {
+      display: grid;
+      gap: 6px;
+    }
+
+    .compatibility-score-caption {
+      margin: 0;
+      color: var(--sub);
+      font-size: 0.84rem;
+    }
+
+    .compatibility-score-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .compatibility-score {
+      font-size: clamp(2rem, 7vw, 3rem);
+      line-height: 1;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .compatibility-meta {
+      margin: 0;
+      color: var(--sub);
+      line-height: 1.6;
+      font-size: 0.92rem;
+      text-align: right;
+    }
+
+    .compatibility-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .compatibility-breakdown-item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: var(--card-strong);
+    }
+
+    .compatibility-breakdown-item h4 {
+      margin: 0 0 4px;
+      font-size: 0.82rem;
+      color: var(--sub);
+    }
+
+    .compatibility-breakdown-item p {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .summary-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .note-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .note-item {
+      padding: 11px 12px;
+      border-radius: 14px;
+      background: rgba(255, 214, 118, 0.14);
+      border: 1px solid rgba(160, 105, 22, 0.18);
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 0.92rem;
+    }
+
+    .timeline {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-top: 14px;
+      scroll-snap-type: x proximity;
+    }
+
+    .taiun-card {
+      flex: 0 0 180px;
+      padding: 16px 15px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--card-strong);
+      scroll-snap-align: start;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .taiun-card.is-current {
+      border-color: rgba(163, 67, 38, 0.44);
+      background: linear-gradient(180deg, rgba(163, 67, 38, 0.12), rgba(163, 67, 38, 0.04)), var(--card-strong);
+      box-shadow: 0 12px 24px rgba(163, 67, 38, 0.16);
+    }
+
+    .taiun-card h3 {
+      margin-bottom: 7px;
+      font-size: 1.1rem;
+    }
+
+    .taiun-card p {
+      margin: 4px 0 0;
+      font-size: 0.9rem;
+      color: var(--sub);
+      line-height: 1.55;
+    }
+
+    .trend-section-title {
+      margin: 18px 0 8px;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: 1.02rem;
+      letter-spacing: 0.04em;
+    }
+
+    .trend-card {
+      flex: 0 0 220px;
+      padding: 16px 15px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--card-strong);
+      scroll-snap-align: start;
+    }
+
+    .trend-card.is-current {
+      border-color: rgba(32, 53, 74, 0.34);
+      background: linear-gradient(180deg, rgba(32, 53, 74, 0.12), rgba(32, 53, 74, 0.04)), var(--card-strong);
+      box-shadow: 0 12px 24px rgba(32, 53, 74, 0.14);
+    }
+
+    .trend-card h4 {
+      margin: 0 0 8px;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: 1.08rem;
+    }
+
+    .trend-card p {
+      margin: 4px 0 0;
+      color: var(--sub);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    .trend-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .trend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(163, 67, 38, 0.1);
+      color: var(--accent-strong);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .relation-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .rel-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 22px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .rel-blue {
+      background: rgba(73, 131, 210, 0.16);
+      color: #2e68b7;
+      border-color: rgba(73, 131, 210, 0.28);
+    }
+
+    .rel-red {
+      background: rgba(192, 74, 74, 0.14);
+      color: #b83c3c;
+      border-color: rgba(192, 74, 74, 0.24);
+    }
+
+    .rel-amber {
+      background: rgba(191, 137, 45, 0.16);
+      color: #9c6517;
+      border-color: rgba(191, 137, 45, 0.28);
+    }
+
+    .rel-green {
+      background: rgba(74, 152, 92, 0.16);
+      color: #327446;
+      border-color: rgba(74, 152, 92, 0.28);
+    }
+
+    .reference-layout {
+      background:
+        linear-gradient(180deg, rgba(10, 10, 10, 0.96), rgba(22, 22, 22, 0.96)),
+        linear-gradient(180deg, #111, #171717);
+      border-color: rgba(154, 139, 44, 0.48);
+      color: #f3efc9;
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
+    }
+
+    .reference-layout h2,
+    .reference-layout h3,
+    .reference-layout h4 {
+      color: #f4e98b;
+    }
+
+    .reference-layout h2 {
+      margin: -14px -14px 12px;
+      padding: 8px 12px;
+      background: linear-gradient(180deg, rgba(138, 124, 34, 0.95), rgba(104, 91, 19, 0.95));
+      color: #fbf6d7;
+      border-bottom: 1px solid rgba(214, 195, 92, 0.3);
+    }
+
+    .reference-layout .section-note,
+    .reference-layout .summary-card p,
+    .reference-layout .taiun-card p,
+    .reference-layout .trend-card p,
+    .reference-layout .note-item {
+      color: #d8d1a4;
+    }
+
+    .reference-layout .field label,
+    .reference-layout .hint-text,
+    .reference-layout .status {
+      color: #d8d1a4;
+    }
+
+    .reference-layout .field input,
+    .reference-layout .field select,
+    .reference-layout .field textarea,
+    .reference-layout .toggle-check,
+    .reference-layout .segmented {
+      background: rgba(26, 26, 26, 0.94);
+      border-color: rgba(154, 139, 44, 0.34);
+      color: #f7f2d5;
+    }
+
+    .reference-layout .segmented span {
+      color: #d8d1a4;
+    }
+
+    .reference-layout .segmented input:checked + span {
+      color: #141414;
+      background: linear-gradient(180deg, #f0e17c, #ae942f);
+    }
+
+    .reference-layout .btn-secondary,
+    .reference-layout .btn-ghost {
+      background: linear-gradient(180deg, rgba(31, 31, 31, 0.98), rgba(18, 18, 18, 0.98));
+      border-color: rgba(154, 139, 44, 0.34);
+      color: #f7f2d5;
+    }
+
+    .reference-layout .btn-primary {
+      color: #141414;
+      background: linear-gradient(180deg, #f0e17c, #ae942f);
+      box-shadow: 0 12px 24px rgba(174, 148, 47, 0.16);
+    }
+
+    .reference-layout .pill-grid,
+    .reference-layout .summary-card,
+    .reference-layout .taiun-card,
+    .reference-layout .trend-card {
+      background: rgba(23, 23, 23, 0.92);
+      border-color: rgba(154, 139, 44, 0.38);
+    }
+
+    .reference-layout .pill-table thead th,
+    .reference-layout .pill-row-head {
+      background: rgba(123, 112, 32, 0.8);
+      color: #fbf6d4;
+    }
+
+    .reference-layout .pill-table th.is-month-column,
+    .reference-layout .pill-table td.is-month-column {
+      background: rgba(154, 139, 44, 0.18);
+    }
+
+    .reference-layout .pill-cell {
+      background: rgba(32, 32, 32, 0.9);
+      border-color: rgba(154, 139, 44, 0.3);
+      color: #f7f2d5;
+    }
+
+    .reference-layout .pill-cell.is-month-focus {
+      background: linear-gradient(180deg, rgba(199, 169, 61, 0.34), rgba(64, 49, 7, 0.56));
+      border-color: rgba(224, 198, 98, 0.52);
+      color: #fff8dc;
+    }
+
+    .reference-layout .pill-cell.is-kuubo {
+      background: rgba(110, 39, 39, 0.72);
+      border-color: rgba(220, 122, 122, 0.54);
+      color: #fff1f1;
+    }
+
+    .reference-layout .summary-card.is-month-focus {
+      background: linear-gradient(180deg, rgba(199, 169, 61, 0.24), rgba(31, 29, 15, 0.92));
+      border-color: rgba(224, 198, 98, 0.48);
+    }
+
+    .reference-layout .result-mode-switch {
+      background: rgba(26, 26, 26, 0.94);
+      border-color: rgba(154, 139, 44, 0.34);
+    }
+
+    .reference-layout .mode-switch-btn {
+      color: #d8d1a4;
+    }
+
+    .reference-layout .mode-switch-btn.is-active {
+      color: #141414;
+      background: linear-gradient(180deg, #f0e17c, #ae942f);
+      box-shadow: none;
+    }
+
+    .reference-layout .subsection-title {
+      color: #f4e98b;
+    }
+
+    .reference-layout .trend-pill {
+      background: rgba(199, 169, 61, 0.16);
+      color: #f4e98b;
+    }
+
+    .reference-layout .rel-blue {
+      background: rgba(31, 70, 123, 0.54);
+      color: #b8d5ff;
+      border-color: rgba(115, 167, 245, 0.34);
+    }
+
+    .reference-layout .rel-red {
+      background: rgba(104, 32, 32, 0.56);
+      color: #ffb4b4;
+      border-color: rgba(228, 116, 116, 0.34);
+    }
+
+    .reference-layout .rel-amber {
+      background: rgba(117, 86, 25, 0.62);
+      color: #f3d588;
+      border-color: rgba(227, 186, 88, 0.34);
+    }
+
+    .reference-layout .rel-green {
+      background: rgba(43, 90, 46, 0.58);
+      color: #bfe4b9;
+      border-color: rgba(124, 198, 130, 0.34);
+    }
+
+    .history-controls {
+      display: grid;
+      gap: 12px;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .history-empty {
+      margin: 0;
+      color: var(--sub);
+    }
+
+    details.history-item {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--card);
+      overflow: hidden;
+    }
+
+    details.history-item[open] {
+      box-shadow: var(--shadow);
+    }
+
+    .history-summary {
+      list-style: none;
+      padding: 16px;
+      display: grid;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .history-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .history-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .history-name {
+      font-size: 1.02rem;
+      font-weight: 700;
+    }
+
+    .history-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    .history-meta {
+      color: var(--sub);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .history-body {
+      padding: 0 16px 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .history-mini {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: var(--card-strong);
+    }
+
+    .history-mini h4 {
+      margin: 0 0 8px;
+      font-size: 0.92rem;
+      color: var(--sub);
+    }
+
+    .history-mini p {
+      margin: 0;
+      line-height: 1.6;
+      font-size: 0.92rem;
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .history-actions input,
+    .history-actions textarea {
+      flex: 1 1 220px;
+    }
+
+    .history-tagline {
+      color: var(--sub);
+      font-size: 0.86rem;
+      margin-top: 4px;
+    }
+
+    .zoukan-editor {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      margin-top: 14px;
+    }
+
+    .zoukan-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--card-strong);
+      padding: 14px;
+    }
+
+    .zoukan-card h4 {
+      margin: 0 0 10px;
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: 1rem;
+    }
+
+    .zoukan-rows {
+      display: grid;
+      gap: 8px;
+    }
+
+    .zoukan-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .tooltip {
+      position: fixed;
+      z-index: 50;
+      max-width: 220px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--tooltip-text);
+      background: var(--tooltip-bg);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease-in-out;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.24);
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (min-width: 980px) {
+      .fortune-layout {
+        grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+        align-items: start;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .app-shell {
+        width: min(100% - 16px, 100%);
+        padding-top: 12px;
+      }
+
+      .card,
+      .hero {
+        border-radius: 20px;
+      }
+
+      .tabs {
+        position: sticky;
+        top: 10px;
+        z-index: 5;
+        backdrop-filter: blur(8px);
+      }
+
+      .tab-btn {
+        padding: 11px 6px;
+      }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div class="app-shell">
+    <header class="hero">
+      <h1>四柱推命パーソナルツール</h1>
+      <p>
+        生年月日・出生時刻・性別から命式を算出し、履歴と設定をブラウザ内に保存します。
+        生年月日は直接入力だけでなく、「今の年齢 + 誕生日」から逆算する入力方法にも対応しています。
+      </p>
+      <div class="hero-meta">
+        <span class="hero-chip" id="todayJstChip">JST基準日: --</span>
+        <span class="hero-chip" id="storageChip">保存先: localStorage</span>
+        <span class="hero-chip">単一HTML / オフライン可</span>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="メインタブ">
+      <button class="tab-btn is-active" type="button" data-tab-target="fortune">占う</button>
+      <button class="tab-btn" type="button" data-tab-target="history">履歴</button>
+      <button class="tab-btn" type="button" data-tab-target="settings">設定</button>
+    </nav>
+
+    <section class="tab-panel" id="tab-fortune" data-tab-panel="fortune">
+      <div class="fortune-layout">
+        <div class="grid">
+          <article class="card reference-layout">
+            <h2>入力</h2>
+            <p class="section-note">
+              直接入力と逆算入力を切り替えられます。出生時刻が不明な場合は、時柱のみ「不明」で処理します。
+            </p>
+
+            <div class="field">
+              <label for="nameInput">名前（任意）</label>
+              <input id="nameInput" type="text" maxlength="60" placeholder="例: 山田 太郎">
+            </div>
+
+            <div class="field">
+              <label>生年月日の入力方法</label>
+              <div class="segmented" role="radiogroup" aria-label="生年月日の入力方法">
+                <label>
+                  <input type="radio" name="birthInputMode" value="direct" checked>
+                  <span>直接入力</span>
+                </label>
+                <label>
+                  <input type="radio" name="birthInputMode" value="reverse">
+                  <span>年齢から逆算</span>
+                </label>
+              </div>
+            </div>
+
+            <div id="directInputPanel">
+              <div class="input-grid">
+                <div class="field">
+                  <label for="birthYearInput">年</label>
+                  <input id="birthYearInput" type="number" min="1900" max="2100" placeholder="1990">
+                </div>
+                <div class="field">
+                  <label for="birthMonthInput">月</label>
+                  <select id="birthMonthInput"></select>
+                </div>
+                <div class="field">
+                  <label for="birthDayInput">日</label>
+                  <select id="birthDayInput"></select>
+                </div>
+              </div>
+            </div>
+
+            <div id="reverseInputPanel" class="hidden">
+              <div class="reverse-grid">
+                <div class="field">
+                  <label for="currentAgeInput">今の年齢</label>
+                  <input id="currentAgeInput" type="number" min="0" max="130" placeholder="28">
+                </div>
+                <div class="field">
+                  <label for="birthdayMonthInput">誕生日の月</label>
+                  <select id="birthdayMonthInput"></select>
+                </div>
+                <div class="field">
+                  <label for="birthdayDayInput">誕生日の日</label>
+                  <select id="birthdayDayInput"></select>
+                </div>
+              </div>
+              <p class="hint-text" id="reversePreviewText">逆算結果: 未計算</p>
+            </div>
+
+            <div class="meta-grid" style="margin-top: 14px;">
+              <div class="field">
+                <label for="birthTimeInput">出生時刻</label>
+                <input id="birthTimeInput" type="time">
+              </div>
+              <div class="field">
+                <label for="birthPlaceInput">出生地（時刻入力時は必須）</label>
+                <input id="birthPlaceInput" type="text" list="birthPlaceOptions" placeholder="例: 東京都 / 大阪 / 那覇">
+              </div>
+              <div class="field">
+                <label for="genderInput">性別</label>
+                <select id="genderInput">
+                  <option value="">選択してください</option>
+                  <option value="male">男性</option>
+                  <option value="female">女性</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="zoukanModeInput">蔵干モード</label>
+                <select id="zoukanModeInput">
+                  <option value="honki">本気のみ</option>
+                  <option value="custom">流派式（按分）</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="inline-controls" style="margin-top: 12px;">
+              <label class="toggle-check" for="birthTimeUnknownInput">
+                <input id="birthTimeUnknownInput" type="checkbox">
+                <span>出生時刻は不明</span>
+              </label>
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-primary" type="button" id="calculateBtn">命式を算出する</button>
+              <button class="btn btn-secondary" type="button" id="saveCurrentBtn">履歴に保存</button>
+              <button class="btn btn-ghost" type="button" id="clearFormBtn">入力をクリア</button>
+            </div>
+
+            <div class="status" id="fortuneStatus"></div>
+          </article>
+        </div>
+
+        <div class="grid">
+          <article class="card reference-layout">
+            <h2>命式</h2>
+            <p class="section-note">
+              セルをタップまたはホバーすると説明を表示します。出生時刻が不明な場合、時柱関連は「不明」になります。
+            </p>
+            <div id="resultEmptyState" class="section-note">まだ計算されていません。</div>
+            <div id="resultPanel" class="hidden">
+              <div class="result-toggle-bar">
+                <span class="result-toggle-label">蔵干表示</span>
+                <div class="result-mode-switch" id="resultZoukanModeSwitch">
+                  <button class="btn mode-switch-btn is-active" type="button" data-result-zoukan-mode="honki">本気のみ</button>
+                  <button class="btn mode-switch-btn" type="button" data-result-zoukan-mode="custom">通常モード</button>
+                </div>
+              </div>
+              <div class="summary-grid" id="resultSummaryGrid"></div>
+              <div class="pill-grid">
+                <table class="pill-table">
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>時柱</th>
+                      <th>日柱</th>
+                      <th class="is-month-column">月柱</th>
+                      <th>年柱</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pillarsTableBody"></tbody>
+                </table>
+              </div>
+              <div class="note-list" id="resultNotes"></div>
+            </div>
+          </article>
+
+          <article class="card reference-layout">
+            <h2>大運</h2>
+            <p class="section-note">
+              起運年齢は出生時点から順行・逆行方向の節入りまでの差を 3 で割って算出しています。
+            </p>
+            <div id="taiunMeta" class="section-note">まだ計算されていません。</div>
+            <div class="timeline" id="taiunTimeline"></div>
+          </article>
+
+          <article class="card">
+            <h2>月運 / 日運</h2>
+            <p class="section-note">
+              現在のJSTを基準にした月運と日運です。月運は節入り、日運は23:00基準で切り替えています。
+            </p>
+            <h3 class="trend-section-title">月運</h3>
+            <div id="monthLuckMeta" class="section-note">まだ計算されていません。</div>
+            <div class="timeline" id="monthLuckTimeline"></div>
+            <h3 class="trend-section-title">日運</h3>
+            <div id="dayLuckMeta" class="section-note">まだ計算されていません。</div>
+            <div class="timeline" id="dayLuckTimeline"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="tab-history" data-tab-panel="history" hidden>
+      <article class="card">
+        <h2>履歴</h2>
+        <p class="section-note">
+          保存済みの命式を一覧できます。名前で検索し、JSONでのエクスポート・インポートも可能です。
+        </p>
+
+        <div class="history-controls">
+          <div class="input-grid">
+            <div class="field">
+              <label for="historySearchInput">検索</label>
+              <input id="historySearchInput" type="text" placeholder="例: 山田 / 1990-05-15 / 壬">
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" id="exportJsonBtn">JSONエクスポート</button>
+            <button class="btn btn-secondary" type="button" id="importJsonBtn">JSONインポート</button>
+            <button class="btn btn-danger" type="button" id="clearHistoryBtn">履歴を全削除</button>
+            <input id="importJsonInput" type="file" accept=".json,application/json" hidden>
+          </div>
+          <div class="status" id="historyStatus"></div>
+        </div>
+
+        <div class="history-list" id="historyList"></div>
+      </article>
+    </section>
+
+    <section class="tab-panel" id="tab-settings" data-tab-panel="settings" hidden>
+      <div class="grid">
+        <article class="card">
+          <h2>基本設定</h2>
+          <div class="settings-grid">
+            <div class="field">
+              <label for="defaultZoukanModeInput">デフォルトの蔵干モード</label>
+              <select id="defaultZoukanModeInput">
+                <option value="honki">本気のみ</option>
+                <option value="custom">流派式（按分）</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="themeInput">テーマ</label>
+              <select id="themeInput">
+                <option value="light">ライト</option>
+                <option value="dark">ダーク</option>
+              </select>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-secondary" type="button" id="saveSettingsBtn">設定を保存</button>
+            <button class="btn btn-danger" type="button" id="resetAllBtn">全データを初期化</button>
+          </div>
+          <div class="status" id="settingsStatus"></div>
+        </article>
+
+        <article class="card">
+          <h2>蔵干按分テーブル</h2>
+          <p class="section-note">
+            「流派式（按分）」を使うときの設定です。各地支ごとに、節入りからの経過日数に応じて上から順番に判定します。
+            未入力の地支は本気にフォールバックします。
+          </p>
+          <div class="zoukan-editor" id="zoukanEditor"></div>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+  <datalist id="birthPlaceOptions"></datalist>
+
+  <script>
+    (() => {
+      const APP_TZ_OFFSET_MINUTES = 9 * 60;
+      const DAY_MS = 24 * 60 * 60 * 1000;
+      const HOUR_MS = 60 * 60 * 1000;
+      const REFERENCE_KOUSHI_DATE = { year: 1984, month: 3, day: 31 };
+      const STORAGE_KEY = "shichusuimei_personal_tool_v1";
+      const MONTH_BRANCH_ORDER = ["寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥", "子", "丑"];
+      const BRANCH_ORDER = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+      const STEM_ORDER = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+      const SOLAR_TERM_DEFS = [
+        { angle: 315, name: "立春", monthBranch: "寅", approxMonth: 2, approxDay: 4 },
+        { angle: 345, name: "啓蟄", monthBranch: "卯", approxMonth: 3, approxDay: 6 },
+        { angle: 15, name: "清明", monthBranch: "辰", approxMonth: 4, approxDay: 5 },
+        { angle: 45, name: "立夏", monthBranch: "巳", approxMonth: 5, approxDay: 5 },
+        { angle: 75, name: "芒種", monthBranch: "午", approxMonth: 6, approxDay: 6 },
+        { angle: 105, name: "小暑", monthBranch: "未", approxMonth: 7, approxDay: 7 },
+        { angle: 135, name: "立秋", monthBranch: "申", approxMonth: 8, approxDay: 7 },
+        { angle: 165, name: "白露", monthBranch: "酉", approxMonth: 9, approxDay: 7 },
+        { angle: 195, name: "寒露", monthBranch: "戌", approxMonth: 10, approxDay: 8 },
+        { angle: 225, name: "立冬", monthBranch: "亥", approxMonth: 11, approxDay: 7 },
+        { angle: 255, name: "大雪", monthBranch: "子", approxMonth: 12, approxDay: 7 },
+        { angle: 285, name: "小寒", monthBranch: "丑", approxMonth: 1, approxDay: 6 }
+      ];
+      const JST_STANDARD_LONGITUDE = 135;
+      const BIRTH_PLACE_DATA = [
+        { name: "北海道", longitude: 141.3545, aliases: ["札幌", "札幌市"] },
+        { name: "青森県", longitude: 140.74, aliases: ["青森", "青森市"] },
+        { name: "岩手県", longitude: 141.1527, aliases: ["盛岡", "盛岡市"] },
+        { name: "宮城県", longitude: 140.8719, aliases: ["仙台", "仙台市"] },
+        { name: "秋田県", longitude: 140.1025, aliases: ["秋田", "秋田市"] },
+        { name: "山形県", longitude: 140.3633, aliases: ["山形", "山形市"] },
+        { name: "福島県", longitude: 140.4676, aliases: ["福島", "福島市"] },
+        { name: "茨城県", longitude: 140.4468, aliases: ["水戸", "水戸市"] },
+        { name: "栃木県", longitude: 139.8836, aliases: ["宇都宮", "宇都宮市"] },
+        { name: "群馬県", longitude: 139.0608, aliases: ["前橋", "前橋市"] },
+        { name: "埼玉県", longitude: 139.6489, aliases: ["さいたま", "さいたま市"] },
+        { name: "千葉県", longitude: 140.1233, aliases: ["千葉", "千葉市"] },
+        { name: "東京都", longitude: 139.6917, aliases: ["東京", "東京23区"] },
+        { name: "神奈川県", longitude: 139.638, aliases: ["横浜", "横浜市"] },
+        { name: "新潟県", longitude: 139.0232, aliases: ["新潟", "新潟市"] },
+        { name: "富山県", longitude: 137.2137, aliases: ["富山", "富山市"] },
+        { name: "石川県", longitude: 136.6562, aliases: ["金沢", "金沢市"] },
+        { name: "福井県", longitude: 136.2216, aliases: ["福井", "福井市"] },
+        { name: "山梨県", longitude: 138.5684, aliases: ["甲府", "甲府市"] },
+        { name: "長野県", longitude: 138.181, aliases: ["長野", "長野市"] },
+        { name: "岐阜県", longitude: 136.7607, aliases: ["岐阜", "岐阜市"] },
+        { name: "静岡県", longitude: 138.3831, aliases: ["静岡", "静岡市"] },
+        { name: "愛知県", longitude: 136.9066, aliases: ["名古屋", "名古屋市"] },
+        { name: "三重県", longitude: 136.5086, aliases: ["津", "津市"] },
+        { name: "滋賀県", longitude: 135.8686, aliases: ["大津", "大津市"] },
+        { name: "京都府", longitude: 135.7681, aliases: ["京都", "京都市"] },
+        { name: "大阪府", longitude: 135.5023, aliases: ["大阪", "大阪市"] },
+        { name: "兵庫県", longitude: 135.1955, aliases: ["神戸", "神戸市"] },
+        { name: "奈良県", longitude: 135.8048, aliases: ["奈良", "奈良市"] },
+        { name: "和歌山県", longitude: 135.1675, aliases: ["和歌山", "和歌山市"] },
+        { name: "鳥取県", longitude: 134.2381, aliases: ["鳥取", "鳥取市"] },
+        { name: "島根県", longitude: 133.0505, aliases: ["松江", "松江市"] },
+        { name: "岡山県", longitude: 133.9344, aliases: ["岡山", "岡山市"] },
+        { name: "広島県", longitude: 132.4553, aliases: ["広島", "広島市"] },
+        { name: "山口県", longitude: 131.4714, aliases: ["山口", "山口市"] },
+        { name: "徳島県", longitude: 134.5549, aliases: ["徳島", "徳島市"] },
+        { name: "香川県", longitude: 134.0466, aliases: ["高松", "高松市"] },
+        { name: "愛媛県", longitude: 132.7657, aliases: ["松山", "松山市"] },
+        { name: "高知県", longitude: 133.5311, aliases: ["高知", "高知市"] },
+        { name: "福岡県", longitude: 130.4017, aliases: ["福岡", "福岡市", "北九州", "北九州市"] },
+        { name: "佐賀県", longitude: 130.3009, aliases: ["佐賀", "佐賀市"] },
+        { name: "長崎県", longitude: 129.8737, aliases: ["長崎", "長崎市"] },
+        { name: "熊本県", longitude: 130.7417, aliases: ["熊本", "熊本市"] },
+        { name: "大分県", longitude: 131.6126, aliases: ["大分", "大分市"] },
+        { name: "宮崎県", longitude: 131.4239, aliases: ["宮崎", "宮崎市"] },
+        { name: "鹿児島県", longitude: 130.5581, aliases: ["鹿児島", "鹿児島市"] },
+        { name: "沖縄県", longitude: 127.6792, aliases: ["那覇", "那覇市", "沖縄"] }
+      ];
+
+      const STEM_META = {
+        甲: { reading: "きのえ", element: "木", yang: true, description: "甲（きのえ）：陽の木。大樹、信念、まっすぐさ。" },
+        乙: { reading: "きのと", element: "木", yang: false, description: "乙（きのと）：陰の木。草花、柔軟さ、調整力。" },
+        丙: { reading: "ひのえ", element: "火", yang: true, description: "丙（ひのえ）：陽の火。太陽、明るさ、表現力。" },
+        丁: { reading: "ひのと", element: "火", yang: false, description: "丁（ひのと）：陰の火。灯火、繊細さ、洞察。" },
+        戊: { reading: "つちのえ", element: "土", yang: true, description: "戊（つちのえ）：陽の土。山、安定感、包容力。" },
+        己: { reading: "つちのと", element: "土", yang: false, description: "己（つちのと）：陰の土。田畑、実務、育成力。" },
+        庚: { reading: "かのえ", element: "金", yang: true, description: "庚（かのえ）：陽の金。鉱石、決断、改革力。" },
+        辛: { reading: "かのと", element: "金", yang: false, description: "辛（かのと）：陰の金。宝石、美意識、精密さ。" },
+        壬: { reading: "みずのえ", element: "水", yang: true, description: "壬（みずのえ）：陽の水。海、大河、包容力。" },
+        癸: { reading: "みずのと", element: "水", yang: false, description: "癸（みずのと）：陰の水。雨露、感受性、浸透力。" }
+      };
+
+      const BRANCH_META = {
+        子: { reading: "ね", element: "水", yang: true, description: "子（ね）：陽の水。始まり、知性、冬の極み。" },
+        丑: { reading: "うし", element: "土", yang: false, description: "丑（うし）：陰の土。蓄積、粘り、冬土用。" },
+        寅: { reading: "とら", element: "木", yang: true, description: "寅（とら）：陽の木。立ち上がり、行動、春の始まり。" },
+        卯: { reading: "う", element: "木", yang: false, description: "卯（う）：陰の木。芽吹き、対人、広がり。" },
+        辰: { reading: "たつ", element: "土", yang: true, description: "辰（たつ）：陽の土。変化、うねり、季節の橋渡し。" },
+        巳: { reading: "み", element: "火", yang: false, description: "巳（み）：陰の火。熟成、執着、内なる熱。" },
+        午: { reading: "うま", element: "火", yang: true, description: "午（うま）：陽の火。頂点、勢い、真昼の気。" },
+        未: { reading: "ひつじ", element: "土", yang: false, description: "未（ひつじ）：陰の土。調整、受容、夏土用。" },
+        申: { reading: "さる", element: "金", yang: true, description: "申（さる）：陽の金。実行、収穫、切り替え。" },
+        酉: { reading: "とり", element: "金", yang: false, description: "酉（とり）：陰の金。洗練、完成、美。" },
+        戌: { reading: "いぬ", element: "土", yang: true, description: "戌（いぬ）：陽の土。防衛、責任、秋土用。" },
+        亥: { reading: "い", element: "水", yang: false, description: "亥（い）：陰の水。終わり、内省、冬への入り口。" }
+      };
+
+      const HONKI_ZOUKAN_MAP = {
+        子: "癸",
+        丑: "己",
+        寅: "甲",
+        卯: "乙",
+        辰: "戊",
+        巳: "丙",
+        午: "丁",
+        未: "己",
+        申: "庚",
+        酉: "辛",
+        戌: "戊",
+        亥: "壬"
+      };
+
+      const GOGYO_GENERATES = {
+        木: "火",
+        火: "土",
+        土: "金",
+        金: "水",
+        水: "木"
+      };
+
+      const GOGYO_CONTROLS = {
+        木: "土",
+        火: "金",
+        土: "水",
+        金: "木",
+        水: "火"
+      };
+
+      const MONTH_START_STEM_BY_YEAR_STEM = {
+        甲: "丙",
+        己: "丙",
+        乙: "戊",
+        庚: "戊",
+        丙: "庚",
+        辛: "庚",
+        丁: "壬",
+        壬: "壬",
+        戊: "甲",
+        癸: "甲"
+      };
+
+      const HOUR_START_STEM_BY_DAY_STEM = {
+        甲: "甲",
+        己: "甲",
+        乙: "丙",
+        庚: "丙",
+        丙: "戊",
+        辛: "戊",
+        丁: "庚",
+        壬: "庚",
+        戊: "壬",
+        癸: "壬"
+      };
+      const TENKAN_KANGOU_MAP = {
+        甲: "己",
+        己: "甲",
+        乙: "庚",
+        庚: "乙",
+        丙: "辛",
+        辛: "丙",
+        丁: "壬",
+        壬: "丁",
+        戊: "癸",
+        癸: "戊"
+      };
+      const CHISHI_SHIGOU_MAP = {
+        子: "丑",
+        丑: "子",
+        寅: "亥",
+        亥: "寅",
+        卯: "戌",
+        戌: "卯",
+        辰: "酉",
+        酉: "辰",
+        巳: "申",
+        申: "巳",
+        午: "未",
+        未: "午"
+      };
+      const CHISHI_CHONG_MAP = {
+        子: "午",
+        午: "子",
+        丑: "未",
+        未: "丑",
+        寅: "申",
+        申: "寅",
+        卯: "酉",
+        酉: "卯",
+        辰: "戌",
+        戌: "辰",
+        巳: "亥",
+        亥: "巳"
+      };
+      const CHISHI_GAI_MAP = {
+        子: "未",
+        未: "子",
+        丑: "午",
+        午: "丑",
+        寅: "巳",
+        巳: "寅",
+        卯: "辰",
+        辰: "卯",
+        申: "亥",
+        亥: "申",
+        酉: "戌",
+        戌: "酉"
+      };
+      const CHISHI_SANGOU_GROUPS = [
+        ["申", "子", "辰"],
+        ["寅", "午", "戌"],
+        ["亥", "卯", "未"],
+        ["巳", "酉", "丑"]
+      ];
+      const CHISHI_HOUGOU_GROUPS = [
+        ["寅", "卯", "辰"],
+        ["巳", "午", "未"],
+        ["申", "酉", "戌"],
+        ["亥", "子", "丑"]
+      ];
+      const COLUMN_LABELS = {
+        hour: "時柱",
+        day: "日柱",
+        month: "月柱",
+        year: "年柱"
+      };
+
+      const JUUNIUN_SEQUENCE = ["長生", "沐浴", "冠帯", "建禄", "帝旺", "衰", "病", "死", "墓", "絶", "胎", "養"];
+      const JUUNIUN_RULES = {
+        甲: { start: "亥", forward: true },
+        乙: { start: "午", forward: false },
+        丙: { start: "寅", forward: true },
+        丁: { start: "酉", forward: false },
+        戊: { start: "寅", forward: true },
+        己: { start: "酉", forward: false },
+        庚: { start: "巳", forward: true },
+        辛: { start: "子", forward: false },
+        壬: { start: "申", forward: true },
+        癸: { start: "卯", forward: false }
+      };
+
+      const TSUHENSEI_DESCRIPTIONS = {
+        比肩: "比肩：自立心、対等、マイペース。同じ性質の仲間。",
+        劫財: "劫財：競争心、勢い、突破力。近い他者とのぶつかり合い。",
+        食神: "食神：おおらかさ、表現、楽しみ。自然体の発信。",
+        傷官: "傷官：鋭さ、美意識、批評眼。繊細で切れ味がある。",
+        偏財: "偏財：流動的な財、人脈、社交性。広く回す力。",
+        正財: "正財：安定財、管理力、現実感覚。堅実に積み上げる。",
+        偏官: "偏官：行動力、闘争心、プレッシャー。強く背中を押す力。",
+        正官: "正官：規律、信用、肩書き、責任。整える力。",
+        偏印: "偏印：ひらめき、独自性、研究肌。変化球の知性。",
+        印綬: "印綬：学び、保護、受容、安心。基礎を支える力。"
+      };
+
+      const JUUNIUN_DESCRIPTIONS = {
+        長生: "長生：生まれたばかり。始まり、伸びしろ、生命力。",
+        沐浴: "沐浴：変化が多い時期。感受性、揺らぎ、華やかさ。",
+        冠帯: "冠帯：形が整い始める。見栄え、社会性、装い。",
+        建禄: "建禄：実力発揮。仕事力、現場感、責任感。",
+        帝旺: "帝旺：最も勢いがある状態。ピーク、頂点、強さ。",
+        衰: "衰：落ち着きに向かう。調整、客観性、余裕。",
+        病: "病：内向きになりやすい。繊細さ、消耗、見直し。",
+        死: "死：一区切り。整理、切り替え、終わらせる力。",
+        墓: "墓：蓄える。守る、秘める、内側に集める。",
+        絶: "絶：いったん断ち切る。ゼロ化、刷新、軽さ。",
+        胎: "胎：準備段階。種、発想、内なるスタート。",
+        養: "養：育てる。保護、熟成、土台づくり。"
+      };
+
+      const KANSHI_60 = Array.from({ length: 60 }, (_, index) => ({
+        index,
+        number: index + 1,
+        tenkan: STEM_ORDER[index % STEM_ORDER.length],
+        chishi: BRANCH_ORDER[index % BRANCH_ORDER.length]
+      }));
+
+      const DEFAULT_HISTORY_LIMIT = 200;
+      const ZOUKAN_ROW_COUNT = 3;
+      const EMPTY_DISPLAY = "—";
+      const solarTermCache = new Map();
+      const birthPlaceLookup = new Map();
+      BIRTH_PLACE_DATA.forEach((place) => {
+        birthPlaceLookup.set(normalizePlace(place.name), place.longitude);
+        place.aliases.forEach((alias) => {
+          birthPlaceLookup.set(normalizePlace(alias), place.longitude);
+        });
+      });
+
+      function createEmptyCustomZoukanState() {
+        return BRANCH_ORDER.reduce((acc, branch) => {
+          acc[branch] = Array.from({ length: ZOUKAN_ROW_COUNT }, () => ({ tenkan: "", days: "" }));
+          return acc;
+        }, {});
+      }
+
+      const DEFAULT_STATE = {
+        version: "1.0",
+        settings: {
+          defaultMode: "honki",
+          theme: "light",
+          customZoukan: createEmptyCustomZoukanState()
+        },
+        history: []
+      };
+
+      function mod(value, base) {
+        return ((value % base) + base) % base;
+      }
+
+      function pad(value) {
+        return String(value).padStart(2, "0");
+      }
+
+      function normalizePlace(value) {
+        return String(value || "").replace(/\s/g, "").toLowerCase();
+      }
+
+      function escapeHtml(value) {
+        return String(value == null ? "" : value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function cloneDeep(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function degreesToRadians(degrees) {
+        return degrees * Math.PI / 180;
+      }
+
+      function normalizeDegrees(value) {
+        return mod(value, 360);
+      }
+
+      function signedAngleDifference(current, target) {
+        return mod(current - target + 180, 360) - 180;
+      }
+
+      function createJstDate(year, month, day, hour = 0, minute = 0) {
+        return new Date(Date.UTC(year, month - 1, day, hour - 9, minute, 0, 0));
+      }
+
+      function toJstParts(date) {
+        const shifted = new Date(date.getTime() + APP_TZ_OFFSET_MINUTES * 60 * 1000);
+        return {
+          year: shifted.getUTCFullYear(),
+          month: shifted.getUTCMonth() + 1,
+          day: shifted.getUTCDate(),
+          hour: shifted.getUTCHours(),
+          minute: shifted.getUTCMinutes()
+        };
+      }
+
+      function formatDateParts(parts) {
+        return `${parts.year}-${pad(parts.month)}-${pad(parts.day)}`;
+      }
+
+      function formatDateTimeJst(date) {
+        const parts = toJstParts(date);
+        return `${parts.year}-${pad(parts.month)}-${pad(parts.day)} ${pad(parts.hour)}:${pad(parts.minute)} JST`;
+      }
+
+      function formatSignedMinutes(minutes) {
+        const sign = minutes > 0 ? "+" : "";
+        return `${sign}${minutes}分`;
+      }
+
+      function getNowJstParts() {
+        return toJstParts(new Date());
+      }
+
+      function getTodayJstDateKey() {
+        return formatDateParts(getNowJstParts());
+      }
+
+      function isLeapYear(year) {
+        return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+      }
+
+      function daysInMonth(year, month) {
+        return [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1] || 31;
+      }
+
+      function isValidDateParts(year, month, day) {
+        if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) return false;
+        if (year < 1900 || year > 2100) return false;
+        if (month < 1 || month > 12) return false;
+        if (day < 1 || day > daysInMonth(year, month)) return false;
+        return true;
+      }
+
+      function addDaysToDateParts(parts, days) {
+        const date = new Date(Date.UTC(parts.year, parts.month - 1, parts.day + days));
+        return {
+          year: date.getUTCFullYear(),
+          month: date.getUTCMonth() + 1,
+          day: date.getUTCDate()
+        };
+      }
+
+      function getCalendarDayDifference(fromParts, toParts) {
+        const fromUtc = Date.UTC(fromParts.year, fromParts.month - 1, fromParts.day);
+        const toUtc = Date.UTC(toParts.year, toParts.month - 1, toParts.day);
+        return Math.round((toUtc - fromUtc) / DAY_MS);
+      }
+
+      function parseTimeString(value) {
+        const match = /^(\d{2}):(\d{2})$/.exec(String(value || ""));
+        if (!match) return null;
+        const hour = Number(match[1]);
+        const minute = Number(match[2]);
+        if (!Number.isInteger(hour) || !Number.isInteger(minute)) return null;
+        if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+        return { hour, minute };
+      }
+
+      function initializeBirthPlaceOptions() {
+        BIRTH_PLACE_DATA.forEach((place) => {
+          const option = document.createElement("option");
+          option.value = place.name;
+          elements.birthPlaceOptions.appendChild(option);
+          birthPlaceLookup.set(normalizePlace(place.name), place.longitude);
+          place.aliases.forEach((alias) => {
+            birthPlaceLookup.set(normalizePlace(alias), place.longitude);
+          });
+        });
+      }
+
+      function resolveLongitude(placeRaw) {
+        const normalized = normalizePlace(placeRaw);
+        if (!normalized) {
+          return { error: "出生時刻を使う場合は出生地を入力してください。" };
+        }
+        const hit = birthPlaceLookup.get(normalized);
+        if (typeof hit !== "number") {
+          return { error: "出生地は候補にある都道府県名または主要都市名で入力してください。" };
+        }
+        return { longitude: hit, source: `出生地: ${String(placeRaw).trim()}` };
+      }
+
+      function adjustBirthTimeByPlace(birthDateParts, birthTime, placeRaw) {
+        if (!birthTime) {
+          return null;
+        }
+        const longitudeResult = resolveLongitude(placeRaw);
+        if (longitudeResult.error) {
+          return { error: longitudeResult.error };
+        }
+        const offsetMinutes = roundHalfAwayFromZero((longitudeResult.longitude - JST_STANDARD_LONGITUDE) * 4);
+        const baseMoment = createJstDate(
+          birthDateParts.year,
+          birthDateParts.month,
+          birthDateParts.day,
+          birthTime.hour,
+          birthTime.minute
+        );
+        const adjustedMoment = new Date(baseMoment.getTime() + offsetMinutes * 60 * 1000);
+        const adjustedParts = toJstParts(adjustedMoment);
+        const normalizedTotal = normalizeToDayMinutes(adjustedParts.hour * 60 + adjustedParts.minute);
+        return {
+          rawMoment: baseMoment,
+          adjustedMoment,
+          adjustedDate: {
+            year: adjustedParts.year,
+            month: adjustedParts.month,
+            day: adjustedParts.day
+          },
+          adjustedTime: {
+            hour: Math.floor(normalizedTotal / 60),
+            minute: normalizedTotal % 60
+          },
+          offsetMinutes,
+          longitude: longitudeResult.longitude,
+          source: longitudeResult.source,
+          dayShift: getCalendarDayDifference(birthDateParts, {
+            year: adjustedParts.year,
+            month: adjustedParts.month,
+            day: adjustedParts.day
+          })
+        };
+      }
+
+      function formatDurationDaysToYears(days) {
+        return `${(days / 3).toFixed(1)}歳`;
+      }
+
+      function roundHalfAwayFromZero(value) {
+        const abs = Math.abs(value);
+        const roundedAbs = Math.floor(abs + 0.5);
+        return value < 0 ? -roundedAbs : roundedAbs;
+      }
+
+      function normalizeToDayMinutes(totalMinutes) {
+        return mod(totalMinutes, 24 * 60);
+      }
+
+      function getDayShiftLabel(dayShift) {
+        if (dayShift === 0) return "同日";
+        if (dayShift === 1) return "翌日";
+        if (dayShift === -1) return "前日";
+        if (dayShift > 0) return `${dayShift}日後`;
+        return `${Math.abs(dayShift)}日前`;
+      }
+
+      function julianDay(date) {
+        return date.getTime() / DAY_MS + 2440587.5;
+      }
+
+      function solarLongitude(date) {
+        const jd = julianDay(date);
+        const T = (jd - 2451545.0) / 36525.0;
+        const L0 = normalizeDegrees(280.46646 + 36000.76983 * T + 0.0003032 * T * T);
+        const M = normalizeDegrees(357.52911 + 35999.05029 * T - 0.0001537 * T * T + T * T * T / 24490000);
+        const C =
+          (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(degreesToRadians(M)) +
+          (0.019993 - 0.000101 * T) * Math.sin(degreesToRadians(2 * M)) +
+          0.000289 * Math.sin(degreesToRadians(3 * M));
+        const trueLongitude = L0 + C;
+        const omega = 125.04 - 1934.136 * T;
+        const apparentLongitude = trueLongitude - 0.00569 - 0.00478 * Math.sin(degreesToRadians(omega));
+        return normalizeDegrees(apparentLongitude);
+      }
+
+      function approximateSolarTermDate(year, def) {
+        return new Date(Date.UTC(year, def.approxMonth - 1, def.approxDay, 0, 0, 0, 0));
+      }
+
+      function bracketSolarTerm(def, year) {
+        const center = approximateSolarTermDate(year, def);
+        const start = new Date(center.getTime() - 5 * DAY_MS);
+        let previousDate = start;
+        let previousDiff = signedAngleDifference(solarLongitude(previousDate), def.angle);
+        for (let step = 1; step <= 240; step += 1) {
+          const currentDate = new Date(start.getTime() + step * HOUR_MS);
+          const currentDiff = signedAngleDifference(solarLongitude(currentDate), def.angle);
+          if (previousDiff === 0 || currentDiff === 0 || (previousDiff < 0 && currentDiff > 0) || (previousDiff > 0 && currentDiff < 0)) {
+            return [previousDate, currentDate];
+          }
+          previousDate = currentDate;
+          previousDiff = currentDiff;
+        }
+        return [new Date(center.getTime() - DAY_MS), new Date(center.getTime() + DAY_MS)];
+      }
+
+      function findSolarTermDate(year, angle) {
+        const cacheKey = `${year}-${angle}`;
+        if (solarTermCache.has(cacheKey)) {
+          return solarTermCache.get(cacheKey);
+        }
+        const def = SOLAR_TERM_DEFS.find((item) => item.angle === angle);
+        if (!def) {
+          throw new Error(`Unknown solar term angle: ${angle}`);
+        }
+        let [left, right] = bracketSolarTerm(def, year);
+        for (let index = 0; index < 42; index += 1) {
+          const middle = new Date((left.getTime() + right.getTime()) / 2);
+          const leftDiff = signedAngleDifference(solarLongitude(left), def.angle);
+          const middleDiff = signedAngleDifference(solarLongitude(middle), def.angle);
+          if (middleDiff === 0) {
+            left = middle;
+            right = middle;
+            break;
+          }
+          if ((leftDiff < 0 && middleDiff <= 0) || (leftDiff > 0 && middleDiff >= 0)) {
+            left = middle;
+          } else {
+            right = middle;
+          }
+        }
+        const result = new Date((left.getTime() + right.getTime()) / 2);
+        solarTermCache.set(cacheKey, result);
+        return result;
+      }
+
+      function getSolarTermsForYear(year) {
+        return SOLAR_TERM_DEFS
+          .map((def) => ({
+            angle: def.angle,
+            name: def.name,
+            monthBranch: def.monthBranch,
+            date: findSolarTermDate(year, def.angle)
+          }))
+          .sort((a, b) => a.date - b.date);
+      }
+
+      function getSolarTermsAround(date) {
+        const year = toJstParts(date).year;
+        return [
+          ...getSolarTermsForYear(year - 1),
+          ...getSolarTermsForYear(year),
+          ...getSolarTermsForYear(year + 1)
+        ].sort((a, b) => a.date - b.date);
+      }
+
+      function getSurroundingSolarTerms(date) {
+        const terms = getSolarTermsAround(date);
+        let previous = terms[0];
+        let next = terms[terms.length - 1];
+        for (let index = 0; index < terms.length; index += 1) {
+          const current = terms[index];
+          if (current.date <= date) {
+            previous = current;
+          }
+          if (current.date > date) {
+            next = current;
+            break;
+          }
+        }
+        return { previous, next };
+      }
+
+      function getYearPillarForDate(date) {
+        const parts = toJstParts(date);
+        const liChun = findSolarTermDate(parts.year, 315);
+        const effectiveYear = date < liChun ? parts.year - 1 : parts.year;
+        return {
+          ...getYearPillarForGregorianYear(effectiveYear),
+          yearNumber: effectiveYear,
+          liChun
+        };
+      }
+
+      function getYearPillarForGregorianYear(year) {
+        return {
+          tenkan: STEM_ORDER[mod(year - 4, STEM_ORDER.length)],
+          chishi: BRANCH_ORDER[mod(year - 4, BRANCH_ORDER.length)]
+        };
+      }
+
+      function getMonthPillarForDate(date, yearStem) {
+        const { previous, next } = getSurroundingSolarTerms(date);
+        const branch = previous.monthBranch;
+        const startStem = MONTH_START_STEM_BY_YEAR_STEM[yearStem];
+        const startStemIndex = STEM_ORDER.indexOf(startStem);
+        const branchOffset = MONTH_BRANCH_ORDER.indexOf(branch);
+        return {
+          tenkan: STEM_ORDER[mod(startStemIndex + branchOffset, STEM_ORDER.length)],
+          chishi: branch,
+          currentTerm: previous,
+          nextTerm: next
+        };
+      }
+
+      function getEffectiveDayDateParts(birthDateParts, birthTime) {
+        if (!birthTime) return { parts: birthDateParts, shiftedAtZi: false };
+        if (birthTime.hour >= 23) {
+          return {
+            parts: addDaysToDateParts(birthDateParts, 1),
+            shiftedAtZi: true
+          };
+        }
+        return { parts: birthDateParts, shiftedAtZi: false };
+      }
+
+      function getDayPillarByDateParts(dateParts) {
+        const offset = getCalendarDayDifference(REFERENCE_KOUSHI_DATE, dateParts);
+        const kanshi = KANSHI_60[mod(offset, 60)];
+        return {
+          tenkan: kanshi.tenkan,
+          chishi: kanshi.chishi
+        };
+      }
+
+      function getHourBranch(hour) {
+        return BRANCH_ORDER[mod(Math.floor((hour + 1) / 2), BRANCH_ORDER.length)];
+      }
+
+      function getHourPillar(dayStem, birthTime) {
+        if (!birthTime) {
+          return { tenkan: "", chishi: "", unknown: true };
+        }
+        const branch = getHourBranch(birthTime.hour);
+        const startStem = HOUR_START_STEM_BY_DAY_STEM[dayStem];
+        const stem = STEM_ORDER[mod(STEM_ORDER.indexOf(startStem) + BRANCH_ORDER.indexOf(branch), STEM_ORDER.length)];
+        return {
+          tenkan: stem,
+          chishi: branch,
+          unknown: false
+        };
+      }
+
+      function getTsuhenByRelation(relation, samePolarity) {
+        if (relation === "same") return samePolarity ? "比肩" : "劫財";
+        if (relation === "output") return samePolarity ? "食神" : "傷官";
+        if (relation === "wealth") return samePolarity ? "偏財" : "正財";
+        if (relation === "officer") return samePolarity ? "偏官" : "正官";
+        if (relation === "resource") return samePolarity ? "偏印" : "印綬";
+        return "";
+      }
+
+      function getTsuhenByStemPair(dayStem, targetStem) {
+        if (!dayStem || !targetStem) return "";
+        const dayMeta = STEM_META[dayStem];
+        const targetMeta = STEM_META[targetStem];
+        if (!dayMeta || !targetMeta) return "";
+        let relation = "";
+        if (dayMeta.element === targetMeta.element) {
+          relation = "same";
+        } else if (GOGYO_GENERATES[dayMeta.element] === targetMeta.element) {
+          relation = "output";
+        } else if (GOGYO_CONTROLS[dayMeta.element] === targetMeta.element) {
+          relation = "wealth";
+        } else if (GOGYO_GENERATES[targetMeta.element] === dayMeta.element) {
+          relation = "resource";
+        } else if (GOGYO_CONTROLS[targetMeta.element] === dayMeta.element) {
+          relation = "officer";
+        }
+        return getTsuhenByRelation(relation, dayMeta.yang === targetMeta.yang);
+      }
+
+      function getJuuniunFromDayStem(dayStem, branch) {
+        const rule = JUUNIUN_RULES[dayStem];
+        if (!rule || !branch) return "";
+        const startIndex = BRANCH_ORDER.indexOf(rule.start);
+        const branchIndex = BRANCH_ORDER.indexOf(branch);
+        if (startIndex === -1 || branchIndex === -1) return "";
+        let offset = branchIndex - startIndex;
+        if (!rule.forward) offset = -offset;
+        return JUUNIUN_SEQUENCE[mod(offset, JUUNIUN_SEQUENCE.length)];
+      }
+
+      function getKanshiIndex(stem, branch) {
+        const stemIndex = STEM_ORDER.indexOf(stem);
+        const branchIndex = BRANCH_ORDER.indexOf(branch);
+        if (stemIndex === -1 || branchIndex === -1) return -1;
+        for (let index = 0; index < 60; index += 1) {
+          if ((index % 10) === stemIndex && (index % 12) === branchIndex) {
+            return index;
+          }
+        }
+        return -1;
+      }
+
+      function getKanshiNumber(stem, branch) {
+        const kanshiIndex = getKanshiIndex(stem, branch);
+        if (kanshiIndex === -1) return -1;
+        return kanshiIndex + 1;
+      }
+
+      function getKuuboFromDayPillar(dayStem, dayBranch) {
+        const kanshiNumber = getKanshiNumber(dayStem, dayBranch);
+        if (kanshiNumber === -1) return [];
+        const xunStartNumber = Math.floor((kanshiNumber - 1) / 10) * 10 + 1;
+        const startBranchIndex = mod(xunStartNumber - 1, BRANCH_ORDER.length);
+        const inXun = new Set(
+          Array.from({ length: 10 }, (_, offset) => BRANCH_ORDER[mod(startBranchIndex + offset, BRANCH_ORDER.length)])
+        );
+        return BRANCH_ORDER.filter((branch) => !inXun.has(branch));
+      }
+
+      function pushRelationBadge(list, label, color, key) {
+        if (list.some((item) => item.key === key)) {
+          return;
+        }
+        list.push({ label, color, key });
+      }
+
+      function branchesCompleteGroup(groups, branchA, branchB, availableBranches) {
+        return groups.some((group) => {
+          if (!group.includes(branchA) || !group.includes(branchB)) return false;
+          return group.every((branch) => availableBranches.includes(branch));
+        });
+      }
+
+      function getPairRelationBadges(basePillar, targetPillar, options = {}) {
+        if (!basePillar || !targetPillar || !basePillar.chishi || !targetPillar.chishi) {
+          return [];
+        }
+        const badges = [];
+        const labelPrefix = options.labelPrefix ? `${options.labelPrefix} ` : "";
+        const availableBranches = Array.isArray(options.availableBranches) ? options.availableBranches : [];
+        const kuubou = Array.isArray(options.kuubou) ? options.kuubou : [];
+
+        if (kuubou.includes(targetPillar.chishi)) {
+          pushRelationBadge(badges, `${labelPrefix}空亡`, "amber", `${labelPrefix}-kuubou`);
+        }
+        if (TENKAN_KANGOU_MAP[basePillar.tenkan] === targetPillar.tenkan) {
+          pushRelationBadge(badges, `${labelPrefix}干合`, "blue", `${labelPrefix}-kangou`);
+        }
+        if (CHISHI_SHIGOU_MAP[basePillar.chishi] === targetPillar.chishi) {
+          pushRelationBadge(badges, `${labelPrefix}支合`, "blue", `${labelPrefix}-shigou`);
+        }
+        if (CHISHI_CHONG_MAP[basePillar.chishi] === targetPillar.chishi) {
+          pushRelationBadge(badges, `${labelPrefix}七冲`, "red", `${labelPrefix}-chong`);
+        }
+        if (CHISHI_GAI_MAP[basePillar.chishi] === targetPillar.chishi) {
+          pushRelationBadge(badges, `${labelPrefix}六害`, "red", `${labelPrefix}-gai`);
+        }
+        if (
+          branchesCompleteGroup(CHISHI_SANGOU_GROUPS, basePillar.chishi, targetPillar.chishi, availableBranches)
+        ) {
+          pushRelationBadge(badges, `${labelPrefix}三合`, "green", `${labelPrefix}-sangou`);
+        }
+        if (
+          branchesCompleteGroup(CHISHI_HOUGOU_GROUPS, basePillar.chishi, targetPillar.chishi, availableBranches)
+        ) {
+          pushRelationBadge(badges, `${labelPrefix}方合`, "green", `${labelPrefix}-hougou`);
+        }
+        if (
+          TENKAN_KANGOU_MAP[basePillar.tenkan] === targetPillar.tenkan &&
+          CHISHI_SHIGOU_MAP[basePillar.chishi] === targetPillar.chishi
+        ) {
+          pushRelationBadge(badges, `${labelPrefix}天地徳合`, "blue", `${labelPrefix}-tentitokugou`);
+        }
+        if (
+          basePillar.tenkan === targetPillar.tenkan &&
+          CHISHI_CHONG_MAP[basePillar.chishi] === targetPillar.chishi
+        ) {
+          pushRelationBadge(badges, `${labelPrefix}天戦地冲`, "red", `${labelPrefix}-tensenchichu`);
+        }
+        return badges;
+      }
+
+      function buildNatalRelationMap(pillars, kuubou) {
+        const allBranches = Object.values(pillars)
+          .filter((pillar) => pillar && pillar.chishi)
+          .map((pillar) => pillar.chishi);
+        return Object.entries(pillars).reduce((acc, [column, pillar]) => {
+          if (column === "day" || !pillar || pillar.unknown || !pillar.chishi) {
+            acc[column] = [];
+            return acc;
+          }
+          acc[column] = getPairRelationBadges(pillars.day, pillar, {
+            availableBranches: allBranches,
+            kuubou
+          });
+          return acc;
+        }, { hour: [], day: [], month: [], year: [] });
+      }
+
+      function buildLuckRelationBadges(luckPillar, natalPillars, kuubou) {
+        const badges = [];
+        const allBranches = [
+          luckPillar.chishi,
+          ...Object.values(natalPillars)
+            .filter((pillar) => pillar && pillar.chishi)
+            .map((pillar) => pillar.chishi)
+        ];
+        Object.entries(natalPillars).forEach(([column, pillar]) => {
+          if (!pillar || pillar.unknown || !pillar.chishi) return;
+          const pairBadges = getPairRelationBadges(luckPillar, pillar, {
+            availableBranches: allBranches,
+            kuubou,
+            labelPrefix: COLUMN_LABELS[column]
+          });
+          pairBadges.forEach((badge) => {
+            pushRelationBadge(badges, badge.label, badge.color, badge.key);
+          });
+        });
+        return badges;
+      }
+
+      function computeCurrentAge(birthDateParts, todayParts) {
+        let age = todayParts.year - birthDateParts.year;
+        if (todayParts.month < birthDateParts.month || (todayParts.month === birthDateParts.month && todayParts.day < birthDateParts.day)) {
+          age -= 1;
+        }
+        return age;
+      }
+
+      function normalizeCustomZoukanInput(rawCustomZoukan) {
+        const empty = createEmptyCustomZoukanState();
+        const input = rawCustomZoukan && typeof rawCustomZoukan === "object" ? rawCustomZoukan : {};
+        BRANCH_ORDER.forEach((branch) => {
+          const rows = Array.isArray(input[branch]) ? input[branch] : [];
+          empty[branch] = Array.from({ length: ZOUKAN_ROW_COUNT }, (_, index) => {
+            const source = rows[index] && typeof rows[index] === "object" ? rows[index] : {};
+            const tenkan = STEM_ORDER.includes(source.tenkan) ? source.tenkan : "";
+            const days = Number.isFinite(Number(source.days)) && Number(source.days) > 0 ? String(Math.floor(Number(source.days))) : "";
+            return { tenkan, days };
+          });
+        });
+        return empty;
+      }
+
+      function getFilledCustomZoukanRows(customZoukan, branch) {
+        const rows = customZoukan && Array.isArray(customZoukan[branch]) ? customZoukan[branch] : [];
+        return rows
+          .map((row) => ({
+            tenkan: STEM_ORDER.includes(row.tenkan) ? row.tenkan : "",
+            days: Number(row.days)
+          }))
+          .filter((row) => row.tenkan && Number.isFinite(row.days) && row.days > 0);
+      }
+
+      function getZoukanForBranch(branch, mode, customZoukan, elapsedDays) {
+        if (!branch) return EMPTY_DISPLAY;
+        if (mode !== "custom") {
+          return HONKI_ZOUKAN_MAP[branch] || EMPTY_DISPLAY;
+        }
+        const rows = getFilledCustomZoukanRows(customZoukan, branch);
+        if (!rows.length) {
+          return HONKI_ZOUKAN_MAP[branch] || EMPTY_DISPLAY;
+        }
+        let remain = Math.max(0, Math.floor(elapsedDays));
+        for (let index = 0; index < rows.length; index += 1) {
+          const row = rows[index];
+          if (remain < row.days) {
+            return row.tenkan;
+          }
+          remain -= row.days;
+        }
+        return rows[rows.length - 1].tenkan;
+      }
+
+      function getBirthMomentForSolarTerms(input, adjustedBirthTime) {
+        if (adjustedBirthTime && adjustedBirthTime.adjustedMoment) {
+          return adjustedBirthTime.adjustedMoment;
+        }
+        if (input.birthTime) {
+          return createJstDate(input.birthDate.year, input.birthDate.month, input.birthDate.day, input.birthTime.hour, input.birthTime.minute);
+        }
+        return createJstDate(input.birthDate.year, input.birthDate.month, input.birthDate.day, 12, 0);
+      }
+
+      function getTaiunDirection(gender, yearStem) {
+        const isYangStem = Boolean(STEM_META[yearStem] && STEM_META[yearStem].yang);
+        const forward = (gender === "male" && isYangStem) || (gender === "female" && !isYangStem);
+        return forward ? "順行" : "逆行";
+      }
+
+      function buildTaiunSequence(monthPillar, birthMoment, gender, yearStem, birthDateParts) {
+        const direction = getTaiunDirection(gender, yearStem);
+        const monthIndex = getKanshiIndex(monthPillar.tenkan, monthPillar.chishi);
+        const targetTerm = direction === "順行" ? monthPillar.nextTerm : monthPillar.currentTerm;
+        const differenceDays = Math.abs(targetTerm.date - birthMoment) / DAY_MS;
+        const startAge = Number((differenceDays / 3).toFixed(1));
+        const today = getNowJstParts();
+        const currentAge = computeCurrentAge(birthDateParts, today);
+        const list = [];
+        for (let index = 0; index < 12; index += 1) {
+          const kanshi = KANSHI_60[mod(monthIndex + (direction === "順行" ? index + 1 : -(index + 1)), 60)];
+          const periodStartAge = Number((startAge + index * 10).toFixed(1));
+          const nextStartAge = Number((startAge + (index + 1) * 10).toFixed(1));
+          list.push({
+            startAge: periodStartAge,
+            endAge: nextStartAge,
+            startYear: birthDateParts.year + Math.floor(periodStartAge),
+            tenkan: kanshi.tenkan,
+            chishi: kanshi.chishi,
+            isCurrent: currentAge >= periodStartAge && currentAge < nextStartAge
+          });
+        }
+        return {
+          direction,
+          startAge,
+          targetTerm,
+          currentAge,
+          list
+        };
+      }
+
+      function buildMonthLuckSequence(dayStem, referenceDate) {
+        const allTerms = getSolarTermsAround(referenceDate);
+        const currentInfo = getSurroundingSolarTerms(referenceDate);
+        const currentIndex = allTerms.findIndex((term) => term.date.getTime() === currentInfo.previous.date.getTime() && term.name === currentInfo.previous.name);
+        const list = [];
+        for (let offset = 0; offset < 12; offset += 1) {
+          const term = allTerms[currentIndex + offset];
+          const nextTerm = allTerms[currentIndex + offset + 1];
+          if (!term || !nextTerm) break;
+          const sampleDate = new Date(term.date.getTime() + 60 * 1000);
+          const yearPillar = getYearPillarForDate(sampleDate);
+          const monthPillar = getMonthPillarForDate(sampleDate, yearPillar.tenkan);
+          const zoukan = HONKI_ZOUKAN_MAP[monthPillar.chishi] || EMPTY_DISPLAY;
+          list.push({
+            label: `${term.name}〜${nextTerm.name}`,
+            tenkan: monthPillar.tenkan,
+            chishi: monthPillar.chishi,
+            tsuhensei: getTsuhenByStemPair(dayStem, monthPillar.tenkan) || EMPTY_DISPLAY,
+            juuniun: getJuuniunFromDayStem(dayStem, monthPillar.chishi) || EMPTY_DISPLAY,
+            zoukanTsuhensei: getTsuhenByStemPair(dayStem, zoukan) || EMPTY_DISPLAY,
+            startDate: term.date,
+            endDate: nextTerm.date,
+            isCurrent: referenceDate >= term.date && referenceDate < nextTerm.date
+          });
+        }
+        return {
+          currentStartDate: currentInfo.previous.date,
+          nextStartDate: currentInfo.next.date,
+          currentTermName: currentInfo.previous.name,
+          nextTermName: currentInfo.next.name,
+          list
+        };
+      }
+
+      function getDayLuckWindowForMoment(referenceDate) {
+        const parts = toJstParts(referenceDate);
+        const dateParts = { year: parts.year, month: parts.month, day: parts.day };
+        const currentTime = { hour: parts.hour, minute: parts.minute };
+        const effectiveDay = getEffectiveDayDateParts(dateParts, currentTime);
+        if (parts.hour >= 23) {
+          const nextDate = addDaysToDateParts(dateParts, 1);
+          return {
+            effectiveDay: effectiveDay.parts,
+            startDate: createJstDate(parts.year, parts.month, parts.day, 23, 0),
+            endDate: createJstDate(nextDate.year, nextDate.month, nextDate.day, 23, 0)
+          };
+        }
+        const previousDate = addDaysToDateParts(dateParts, -1);
+        return {
+          effectiveDay: effectiveDay.parts,
+          startDate: createJstDate(previousDate.year, previousDate.month, previousDate.day, 23, 0),
+          endDate: createJstDate(parts.year, parts.month, parts.day, 23, 0)
+        };
+      }
+
+      function buildDayLuckSequence(dayStem, referenceDate) {
+        const list = [];
+        for (let offset = -5; offset <= 6; offset += 1) {
+          const sampleDate = new Date(referenceDate.getTime() + offset * DAY_MS);
+          const window = getDayLuckWindowForMoment(sampleDate);
+          const pillar = getDayPillarByDateParts(window.effectiveDay);
+          const zoukan = HONKI_ZOUKAN_MAP[pillar.chishi] || EMPTY_DISPLAY;
+          list.push({
+            label: formatDateParts(window.effectiveDay),
+            tenkan: pillar.tenkan,
+            chishi: pillar.chishi,
+            tsuhensei: getTsuhenByStemPair(dayStem, pillar.tenkan) || EMPTY_DISPLAY,
+            juuniun: getJuuniunFromDayStem(dayStem, pillar.chishi) || EMPTY_DISPLAY,
+            zoukanTsuhensei: getTsuhenByStemPair(dayStem, zoukan) || EMPTY_DISPLAY,
+            startDate: window.startDate,
+            endDate: window.endDate,
+            isCurrent: referenceDate >= window.startDate && referenceDate < window.endDate
+          });
+        }
+        const currentItem = list.find((item) => item.isCurrent) || list[5];
+        return {
+          currentDateLabel: currentItem ? currentItem.label : EMPTY_DISPLAY,
+          currentStartDate: currentItem ? currentItem.startDate : referenceDate,
+          nextStartDate: currentItem ? currentItem.endDate : referenceDate,
+          list
+        };
+      }
+
+      function computeChart(input, settings) {
+        const adjustedBirthTime = input.birthTime ? adjustBirthTimeByPlace(input.birthDate, input.birthTime, input.birthPlace) : null;
+        if (adjustedBirthTime && adjustedBirthTime.error) {
+          throw new Error(adjustedBirthTime.error);
+        }
+        const correctedBirthDate = adjustedBirthTime ? adjustedBirthTime.adjustedDate : input.birthDate;
+        const correctedBirthTime = adjustedBirthTime ? adjustedBirthTime.adjustedTime : input.birthTime;
+        const birthMoment = getBirthMomentForSolarTerms(input, adjustedBirthTime);
+        const yearPillar = getYearPillarForDate(birthMoment);
+        const monthPillar = getMonthPillarForDate(birthMoment, yearPillar.tenkan);
+        const effectiveDay = getEffectiveDayDateParts(correctedBirthDate, correctedBirthTime);
+        const dayPillar = getDayPillarByDateParts(effectiveDay.parts);
+        const hourPillar = correctedBirthTime ? getHourPillar(dayPillar.tenkan, correctedBirthTime) : { tenkan: "", chishi: "", unknown: true };
+        const elapsedDays = Math.max(0, Math.floor((birthMoment - monthPillar.currentTerm.date) / DAY_MS));
+
+        const pillars = {
+          year: { tenkan: yearPillar.tenkan, chishi: yearPillar.chishi },
+          month: { tenkan: monthPillar.tenkan, chishi: monthPillar.chishi },
+          day: { tenkan: dayPillar.tenkan, chishi: dayPillar.chishi },
+          hour: hourPillar.unknown ? { tenkan: "", chishi: "", unknown: true } : { tenkan: hourPillar.tenkan, chishi: hourPillar.chishi }
+        };
+
+        const zoukanMode = input.zoukanMode || settings.defaultMode || "honki";
+        const zoukan = {
+          year: getZoukanForBranch(pillars.year.chishi, zoukanMode, settings.customZoukan, elapsedDays),
+          month: getZoukanForBranch(pillars.month.chishi, zoukanMode, settings.customZoukan, elapsedDays),
+          day: getZoukanForBranch(pillars.day.chishi, zoukanMode, settings.customZoukan, elapsedDays),
+          hour: pillars.hour.unknown ? EMPTY_DISPLAY : getZoukanForBranch(pillars.hour.chishi, zoukanMode, settings.customZoukan, elapsedDays)
+        };
+
+        const tsuhensei = {
+          year: getTsuhenByStemPair(pillars.day.tenkan, pillars.year.tenkan) || EMPTY_DISPLAY,
+          month: getTsuhenByStemPair(pillars.day.tenkan, pillars.month.tenkan) || EMPTY_DISPLAY,
+          day: EMPTY_DISPLAY,
+          hour: pillars.hour.unknown ? EMPTY_DISPLAY : (getTsuhenByStemPair(pillars.day.tenkan, pillars.hour.tenkan) || EMPTY_DISPLAY)
+        };
+
+        const zoukanTsuhensei = {
+          year: getTsuhenByStemPair(pillars.day.tenkan, zoukan.year) || EMPTY_DISPLAY,
+          month: getTsuhenByStemPair(pillars.day.tenkan, zoukan.month) || EMPTY_DISPLAY,
+          day: getTsuhenByStemPair(pillars.day.tenkan, zoukan.day) || EMPTY_DISPLAY,
+          hour: pillars.hour.unknown ? EMPTY_DISPLAY : (getTsuhenByStemPair(pillars.day.tenkan, zoukan.hour) || EMPTY_DISPLAY)
+        };
+
+        const juuniunsei = {
+          year: getJuuniunFromDayStem(pillars.day.tenkan, pillars.year.chishi) || EMPTY_DISPLAY,
+          month: getJuuniunFromDayStem(pillars.day.tenkan, pillars.month.chishi) || EMPTY_DISPLAY,
+          day: getJuuniunFromDayStem(pillars.day.tenkan, pillars.day.chishi) || EMPTY_DISPLAY,
+          hour: pillars.hour.unknown ? EMPTY_DISPLAY : (getJuuniunFromDayStem(pillars.day.tenkan, pillars.hour.chishi) || EMPTY_DISPLAY)
+        };
+
+        const kuubou = getKuuboFromDayPillar(pillars.day.tenkan, pillars.day.chishi);
+        const natalRelations = buildNatalRelationMap(pillars, kuubou);
+        const taiun = buildTaiunSequence(monthPillar, birthMoment, input.gender, yearPillar.tenkan, input.birthDate);
+        const referenceMoment = new Date();
+        const monthLuck = buildMonthLuckSequence(pillars.day.tenkan, referenceMoment);
+        monthLuck.list = monthLuck.list.map((item) => ({
+          ...item,
+          relationBadges: buildLuckRelationBadges({ tenkan: item.tenkan, chishi: item.chishi }, pillars, kuubou)
+        }));
+        const dayLuck = buildDayLuckSequence(pillars.day.tenkan, referenceMoment);
+        dayLuck.list = dayLuck.list.map((item) => ({
+          ...item,
+          relationBadges: buildLuckRelationBadges({ tenkan: item.tenkan, chishi: item.chishi }, pillars, kuubou)
+        }));
+        const notes = [];
+
+        if (effectiveDay.shiftedAtZi) {
+          notes.push("23:00以降のため、日柱は翌日扱いで算出しています。");
+        }
+
+        if (adjustedBirthTime) {
+          notes.push(
+            `出生地補正を適用しました。${adjustedBirthTime.source} / 地域時差 ${formatSignedMinutes(adjustedBirthTime.offsetMinutes)} / 補正後 ${formatDateTimeJst(adjustedBirthTime.adjustedMoment)}（${getDayShiftLabel(adjustedBirthTime.dayShift)}）`
+          );
+        }
+
+        if (!input.birthTime) {
+          const birthDateKey = formatDateParts(input.birthDate);
+          if (formatDateParts(toJstParts(yearPillar.liChun)) === birthDateKey) {
+            notes.push("出生時刻不明のため、立春当日生まれは年柱が前後する可能性があります。");
+          }
+          if (formatDateParts(toJstParts(monthPillar.currentTerm.date)) === birthDateKey || formatDateParts(toJstParts(monthPillar.nextTerm.date)) === birthDateKey) {
+            notes.push("出生時刻不明のため、節入り当日生まれは月柱が前後する可能性があります。");
+          }
+        }
+
+        return {
+          pillars,
+          zoukan,
+          tsuhensei,
+          zoukanTsuhensei,
+          juuniunsei,
+          kuubou,
+          natalRelations,
+          taiun,
+          monthLuck,
+          dayLuck,
+          notes,
+          meta: {
+            birthMomentJst: formatDateTimeJst(birthMoment),
+            rawBirthMomentJst: input.birthTime ? formatDateTimeJst(createJstDate(input.birthDate.year, input.birthDate.month, input.birthDate.day, input.birthTime.hour, input.birthTime.minute)) : "",
+            correctedBirthMomentJst: adjustedBirthTime ? formatDateTimeJst(adjustedBirthTime.adjustedMoment) : "",
+            birthPlace: input.birthPlace || "",
+            regionalOffsetMinutes: adjustedBirthTime ? adjustedBirthTime.offsetMinutes : 0,
+            regionalOffsetLabel: adjustedBirthTime ? formatSignedMinutes(adjustedBirthTime.offsetMinutes) : "",
+            longitudeSource: adjustedBirthTime ? adjustedBirthTime.source : "",
+            dayShiftLabel: adjustedBirthTime ? getDayShiftLabel(adjustedBirthTime.dayShift) : "",
+            liChunJst: formatDateTimeJst(yearPillar.liChun),
+            currentTermName: monthPillar.currentTerm.name,
+            currentTermJst: formatDateTimeJst(monthPillar.currentTerm.date),
+            nextTermName: monthPillar.nextTerm.name,
+            nextTermJst: formatDateTimeJst(monthPillar.nextTerm.date),
+            elapsedDays,
+            effectiveDayDate: formatDateParts(effectiveDay.parts),
+            correctedBirthTimeText: correctedBirthTime ? `${pad(correctedBirthTime.hour)}:${pad(correctedBirthTime.minute)}` : ""
+          }
+        };
+      }
+
+      function resolveBirthDateFromAgeInput(age, month, day, todayParts) {
+        const hasHadBirthday = todayParts.month > month || (todayParts.month === month && todayParts.day >= day);
+        const year = hasHadBirthday ? todayParts.year - age : todayParts.year - age - 1;
+        if (!isValidDateParts(year, month, day)) {
+          return null;
+        }
+        return { year, month, day };
+      }
+
+      function buildTooltipText(type, value) {
+        if (!value || value === EMPTY_DISPLAY || value === "不明") return "";
+        if (type === "stem") return STEM_META[value] ? STEM_META[value].description : "";
+        if (type === "branch") return BRANCH_META[value] ? BRANCH_META[value].description : "";
+        if (type === "zoukan") return STEM_META[value] ? `蔵干：${STEM_META[value].description}` : "";
+        if (type === "tsuhensei") return TSUHENSEI_DESCRIPTIONS[value] || "";
+        if (type === "juuniun") return JUUNIUN_DESCRIPTIONS[value] || "";
+        return "";
+      }
+
+      const ShichuTool = {
+        solarLongitude,
+        findSolarTermDate,
+        computeChart,
+        resolveBirthDateFromAgeInput,
+        getKanshiNumber,
+        getKuuboFromDayPillar,
+        getTsuhenByStemPair,
+        getJuuniunFromDayStem,
+        getDayPillarByDateParts,
+        createJstDate,
+        formatDateTimeJst
+      };
+
+      globalThis.ShichuTool = ShichuTool;
+
+      if (typeof module !== "undefined" && module.exports) {
+        module.exports = ShichuTool;
+      }
+
+      if (typeof document === "undefined") {
+        return;
+      }
+
+      const state = loadState();
+      let currentResult = null;
+      let currentInput = null;
+      let currentHistoryId = "";
+      let activeTooltipAnchor = null;
+
+      const elements = {
+        body: document.body,
+        todayJstChip: document.getElementById("todayJstChip"),
+        tabButtons: Array.from(document.querySelectorAll(".tab-btn")),
+        tabPanels: Array.from(document.querySelectorAll("[data-tab-panel]")),
+        nameInput: document.getElementById("nameInput"),
+        birthYearInput: document.getElementById("birthYearInput"),
+        birthMonthInput: document.getElementById("birthMonthInput"),
+        birthDayInput: document.getElementById("birthDayInput"),
+        birthdayMonthInput: document.getElementById("birthdayMonthInput"),
+        birthdayDayInput: document.getElementById("birthdayDayInput"),
+        currentAgeInput: document.getElementById("currentAgeInput"),
+        birthTimeInput: document.getElementById("birthTimeInput"),
+        birthPlaceInput: document.getElementById("birthPlaceInput"),
+        birthPlaceOptions: document.getElementById("birthPlaceOptions"),
+        birthTimeUnknownInput: document.getElementById("birthTimeUnknownInput"),
+        genderInput: document.getElementById("genderInput"),
+        zoukanModeInput: document.getElementById("zoukanModeInput"),
+        directInputPanel: document.getElementById("directInputPanel"),
+        reverseInputPanel: document.getElementById("reverseInputPanel"),
+        reversePreviewText: document.getElementById("reversePreviewText"),
+        calculateBtn: document.getElementById("calculateBtn"),
+        saveCurrentBtn: document.getElementById("saveCurrentBtn"),
+        clearFormBtn: document.getElementById("clearFormBtn"),
+        fortuneStatus: document.getElementById("fortuneStatus"),
+        resultEmptyState: document.getElementById("resultEmptyState"),
+        resultPanel: document.getElementById("resultPanel"),
+        resultZoukanModeSwitch: document.getElementById("resultZoukanModeSwitch"),
+        resultSummaryGrid: document.getElementById("resultSummaryGrid"),
+        pillarsTableBody: document.getElementById("pillarsTableBody"),
+        resultNotes: document.getElementById("resultNotes"),
+        taiunMeta: document.getElementById("taiunMeta"),
+        taiunTimeline: document.getElementById("taiunTimeline"),
+        monthLuckMeta: document.getElementById("monthLuckMeta"),
+        monthLuckTimeline: document.getElementById("monthLuckTimeline"),
+        dayLuckMeta: document.getElementById("dayLuckMeta"),
+        dayLuckTimeline: document.getElementById("dayLuckTimeline"),
+        historySearchInput: document.getElementById("historySearchInput"),
+        exportJsonBtn: document.getElementById("exportJsonBtn"),
+        importJsonBtn: document.getElementById("importJsonBtn"),
+        importJsonInput: document.getElementById("importJsonInput"),
+        clearHistoryBtn: document.getElementById("clearHistoryBtn"),
+        historyStatus: document.getElementById("historyStatus"),
+        historyList: document.getElementById("historyList"),
+        defaultZoukanModeInput: document.getElementById("defaultZoukanModeInput"),
+        themeInput: document.getElementById("themeInput"),
+        saveSettingsBtn: document.getElementById("saveSettingsBtn"),
+        resetAllBtn: document.getElementById("resetAllBtn"),
+        settingsStatus: document.getElementById("settingsStatus"),
+        zoukanEditor: document.getElementById("zoukanEditor"),
+        tooltip: document.getElementById("tooltip")
+      };
+
+      init();
+
+      function init() {
+        populateMonthDaySelect(elements.birthMonthInput, 12);
+        populateMonthDaySelect(elements.birthDayInput, 31);
+        populateMonthDaySelect(elements.birthdayMonthInput, 12);
+        populateMonthDaySelect(elements.birthdayDayInput, 31);
+        initializeBirthPlaceOptions();
+        buildCustomZoukanEditor();
+        applyStateToUi();
+        bindEvents();
+        renderReversePreview();
+        renderHistory();
+        updateTodayChip();
+        setInterval(updateTodayChip, 60 * 1000);
+      }
+
+      function loadState() {
+        const base = cloneDeep(DEFAULT_STATE);
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return base;
+          const parsed = JSON.parse(raw);
+          if (!parsed || typeof parsed !== "object") return base;
+          const settings = parsed.settings && typeof parsed.settings === "object" ? parsed.settings : {};
+          const history = Array.isArray(parsed.history) ? parsed.history : [];
+          base.settings.defaultMode = settings.defaultMode === "custom" ? "custom" : "honki";
+          base.settings.theme = settings.theme === "dark" ? "dark" : "light";
+          base.settings.customZoukan = normalizeCustomZoukanInput(settings.customZoukan);
+          base.history = history
+            .map(sanitizeHistoryEntry)
+            .filter(Boolean)
+            .slice(0, DEFAULT_HISTORY_LIMIT);
+          return base;
+        } catch (error) {
+          return base;
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          version: state.version,
+          settings: {
+            defaultMode: state.settings.defaultMode,
+            theme: state.settings.theme,
+            customZoukan: state.settings.customZoukan
+          },
+          history: state.history.slice(0, DEFAULT_HISTORY_LIMIT)
+        }));
+      }
+
+      function sanitizeHistoryEntry(entry) {
+        if (!entry || typeof entry !== "object") return null;
+        if (!entry.id || !entry.result || !entry.birthdate) return null;
+        return {
+          id: String(entry.id),
+          name: typeof entry.name === "string" ? entry.name : "",
+          birthdate: String(entry.birthdate),
+          birthtime: typeof entry.birthtime === "string" ? entry.birthtime : "",
+          birthplace: typeof entry.birthplace === "string" ? entry.birthplace : "",
+          birthtimeUnknown: Boolean(entry.birthtimeUnknown),
+          gender: entry.gender === "female" ? "female" : "male",
+          inputMode: entry.inputMode === "reverse" ? "reverse" : "direct",
+          zoukan_mode: entry.zoukan_mode === "custom" ? "custom" : "honki",
+          memo: typeof entry.memo === "string" ? entry.memo : "",
+          tags: Array.isArray(entry.tags) ? entry.tags.map((tag) => String(tag)).filter(Boolean) : [],
+          createdAt: typeof entry.createdAt === "string" ? entry.createdAt : new Date().toISOString(),
+          savedAt: typeof entry.savedAt === "string" ? entry.savedAt : new Date().toISOString(),
+          result: entry.result
+        };
+      }
+
+      function populateMonthDaySelect(select, max) {
+        select.innerHTML = '<option value="">選択</option>' +
+          Array.from({ length: max }, (_, index) => {
+            const value = index + 1;
+            return `<option value="${value}">${value}</option>`;
+          }).join("");
+      }
+
+      function buildCustomZoukanEditor() {
+        elements.zoukanEditor.innerHTML = BRANCH_ORDER.map((branch) => {
+          return `
+            <div class="zoukan-card">
+              <h4>${branch}</h4>
+              <div class="zoukan-rows">
+                ${Array.from({ length: ZOUKAN_ROW_COUNT }, (_, index) => {
+                  return `
+                    <div class="zoukan-row">
+                      <select data-zoukan-branch="${branch}" data-zoukan-index="${index}" data-zoukan-key="tenkan">
+                        <option value="">天干</option>
+                        ${STEM_ORDER.map((stem) => `<option value="${stem}">${stem}</option>`).join("")}
+                      </select>
+                      <input
+                        data-zoukan-branch="${branch}"
+                        data-zoukan-index="${index}"
+                        data-zoukan-key="days"
+                        type="number"
+                        min="1"
+                        step="1"
+                        placeholder="日数"
+                      >
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function applyStateToUi() {
+        elements.body.dataset.theme = state.settings.theme;
+        elements.zoukanModeInput.value = state.settings.defaultMode;
+        elements.defaultZoukanModeInput.value = state.settings.defaultMode;
+        elements.themeInput.value = state.settings.theme;
+        elements.birthTimeUnknownInput.checked = false;
+        syncBirthTimeUnknownState();
+        syncResultZoukanModeButtons(state.settings.defaultMode);
+        applyCustomZoukanToEditor();
+      }
+
+      function applyCustomZoukanToEditor() {
+        BRANCH_ORDER.forEach((branch) => {
+          const rows = state.settings.customZoukan[branch];
+          rows.forEach((row, index) => {
+            const stemEl = elements.zoukanEditor.querySelector(`[data-zoukan-branch="${branch}"][data-zoukan-index="${index}"][data-zoukan-key="tenkan"]`);
+            const daysEl = elements.zoukanEditor.querySelector(`[data-zoukan-branch="${branch}"][data-zoukan-index="${index}"][data-zoukan-key="days"]`);
+            if (stemEl) stemEl.value = row.tenkan || "";
+            if (daysEl) daysEl.value = row.days || "";
+          });
+        });
+      }
+
+      function syncEditorToCustomZoukan() {
+        BRANCH_ORDER.forEach((branch) => {
+          state.settings.customZoukan[branch] = Array.from({ length: ZOUKAN_ROW_COUNT }, (_, index) => {
+            const stemEl = elements.zoukanEditor.querySelector(`[data-zoukan-branch="${branch}"][data-zoukan-index="${index}"][data-zoukan-key="tenkan"]`);
+            const daysEl = elements.zoukanEditor.querySelector(`[data-zoukan-branch="${branch}"][data-zoukan-index="${index}"][data-zoukan-key="days"]`);
+            return {
+              tenkan: STEM_ORDER.includes(stemEl ? stemEl.value : "") ? stemEl.value : "",
+              days: daysEl && Number(daysEl.value) > 0 ? String(Math.floor(Number(daysEl.value))) : ""
+            };
+          });
+        });
+      }
+
+      function bindEvents() {
+        elements.tabButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            switchTab(button.dataset.tabTarget);
+          });
+        });
+
+        document.querySelectorAll('input[name="birthInputMode"]').forEach((radio) => {
+          radio.addEventListener("change", syncBirthInputModeUi);
+          radio.addEventListener("change", renderReversePreview);
+        });
+
+        elements.birthTimeUnknownInput.addEventListener("change", syncBirthTimeUnknownState);
+        elements.currentAgeInput.addEventListener("input", renderReversePreview);
+        elements.birthdayMonthInput.addEventListener("change", renderReversePreview);
+        elements.birthdayDayInput.addEventListener("change", renderReversePreview);
+        elements.calculateBtn.addEventListener("click", handleCalculate);
+        elements.saveCurrentBtn.addEventListener("click", handleSaveCurrent);
+        elements.clearFormBtn.addEventListener("click", clearForm);
+        elements.resultZoukanModeSwitch.addEventListener("click", handleResultZoukanModeSwitch);
+        elements.historySearchInput.addEventListener("input", renderHistory);
+        elements.exportJsonBtn.addEventListener("click", exportJson);
+        elements.importJsonBtn.addEventListener("click", () => elements.importJsonInput.click());
+        elements.importJsonInput.addEventListener("change", importJson);
+        elements.clearHistoryBtn.addEventListener("click", clearHistory);
+        elements.defaultZoukanModeInput.addEventListener("change", handleSettingsChanged);
+        elements.themeInput.addEventListener("change", handleThemeChanged);
+        elements.saveSettingsBtn.addEventListener("click", saveSettings);
+        elements.resetAllBtn.addEventListener("click", resetAllData);
+        elements.zoukanEditor.addEventListener("change", handleSettingsChanged);
+        elements.zoukanEditor.addEventListener("input", handleSettingsChanged);
+        document.addEventListener("click", handleTooltipClick);
+        document.addEventListener("mouseover", handleTooltipHover);
+        document.addEventListener("mouseout", handleTooltipLeave);
+        window.addEventListener("scroll", hideTooltip, { passive: true });
+        window.addEventListener("resize", hideTooltip);
+      }
+
+      function updateTodayChip() {
+        elements.todayJstChip.textContent = `JST基準日: ${getTodayJstDateKey()}`;
+        renderReversePreview();
+      }
+
+      function getSelectedBirthInputMode() {
+        const checked = document.querySelector('input[name="birthInputMode"]:checked');
+        return checked ? checked.value : "direct";
+      }
+
+      function syncBirthInputModeUi() {
+        const mode = getSelectedBirthInputMode();
+        elements.directInputPanel.classList.toggle("hidden", mode !== "direct");
+        elements.reverseInputPanel.classList.toggle("hidden", mode !== "reverse");
+      }
+
+      function syncBirthTimeUnknownState() {
+        const disabled = elements.birthTimeUnknownInput.checked;
+        elements.birthTimeInput.disabled = disabled;
+        elements.birthPlaceInput.disabled = disabled;
+        if (disabled) {
+          elements.birthTimeInput.value = "";
+          elements.birthPlaceInput.value = "";
+        }
+      }
+
+      function renderReversePreview() {
+        const ageRaw = elements.currentAgeInput.value.trim();
+        const monthRaw = elements.birthdayMonthInput.value;
+        const dayRaw = elements.birthdayDayInput.value;
+        if (!ageRaw || !monthRaw || !dayRaw) {
+          elements.reversePreviewText.textContent = "逆算結果: 年齢と誕生日を入れると生年月日を表示します。";
+          return;
+        }
+        const age = Number(ageRaw);
+        const month = Number(monthRaw);
+        const day = Number(dayRaw);
+        const today = getNowJstParts();
+        if (!Number.isInteger(age) || age < 0 || age > 130 || !Number.isInteger(month) || !Number.isInteger(day)) {
+          elements.reversePreviewText.textContent = "逆算結果: 年齢と誕生日を入れると生年月日を表示します。";
+          return;
+        }
+        const resolved = resolveBirthDateFromAgeInput(age, month, day, today);
+        if (!resolved) {
+          elements.reversePreviewText.textContent = "逆算結果: 入力の整合性が取れません。";
+          return;
+        }
+        elements.reversePreviewText.textContent = `逆算結果: ${formatDateParts(resolved)}（JST基準日 ${formatDateParts(today)} で計算）`;
+      }
+
+      function readFormInput() {
+        const name = elements.nameInput.value.trim();
+        const mode = getSelectedBirthInputMode();
+        const birthTimeUnknown = elements.birthTimeUnknownInput.checked;
+        const gender = elements.genderInput.value;
+        const zoukanMode = elements.zoukanModeInput.value === "custom" ? "custom" : "honki";
+        const birthPlace = elements.birthPlaceInput.value.trim();
+        let birthDate = null;
+
+        if (mode === "direct") {
+          const yearRaw = elements.birthYearInput.value.trim();
+          const monthRaw = elements.birthMonthInput.value;
+          const dayRaw = elements.birthDayInput.value;
+          if (!yearRaw || !monthRaw || !dayRaw) {
+            return { error: "生年月日をすべて入力してください。" };
+          }
+          const year = Number(yearRaw);
+          const month = Number(monthRaw);
+          const day = Number(dayRaw);
+          if (!isValidDateParts(year, month, day)) {
+            return { error: "生年月日を正しく入力してください。" };
+          }
+          birthDate = { year, month, day };
+        } else {
+          const ageRaw = elements.currentAgeInput.value.trim();
+          const monthRaw = elements.birthdayMonthInput.value;
+          const dayRaw = elements.birthdayDayInput.value;
+          if (!ageRaw || !monthRaw || !dayRaw) {
+            return { error: "今の年齢と誕生日をすべて入力してください。" };
+          }
+          const age = Number(ageRaw);
+          const month = Number(monthRaw);
+          const day = Number(dayRaw);
+          if (!Number.isInteger(age) || age < 0 || age > 130) {
+            return { error: "今の年齢を0〜130で入力してください。" };
+          }
+          const resolved = resolveBirthDateFromAgeInput(age, month, day, getNowJstParts());
+          if (!resolved) {
+            return { error: "今の年齢と誕生日から生年月日を逆算できませんでした。" };
+          }
+          birthDate = resolved;
+        }
+
+        if (!gender) {
+          return { error: "性別を選択してください。" };
+        }
+
+        let birthTime = null;
+        if (!birthTimeUnknown) {
+          birthTime = parseTimeString(elements.birthTimeInput.value);
+          if (!birthTime) {
+            return { error: "出生時刻を入力するか、「不明」にチェックしてください。" };
+          }
+          const longitudeResult = resolveLongitude(birthPlace);
+          if (longitudeResult.error) {
+            return { error: longitudeResult.error };
+          }
+        }
+
+        return {
+          name,
+          inputMode: mode,
+          birthDate,
+          birthTime,
+          birthPlace,
+          birthTimeUnknown,
+          gender,
+          zoukanMode
+        };
+      }
+
+      function syncResultZoukanModeButtons(mode) {
+        elements.resultZoukanModeSwitch.querySelectorAll("[data-result-zoukan-mode]").forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.resultZoukanMode === mode);
+        });
+      }
+
+      function updateCurrentHistoryEntry(input, result) {
+        if (!currentHistoryId) return;
+        const entry = state.history.find((item) => item.id === currentHistoryId);
+        if (!entry) return;
+        entry.name = input.name;
+        entry.birthdate = formatDateParts(input.birthDate);
+        entry.birthtime = input.birthTime ? `${pad(input.birthTime.hour)}:${pad(input.birthTime.minute)}` : "";
+        entry.birthtimeUnknown = input.birthTimeUnknown;
+        entry.birthplace = input.birthPlace || "";
+        entry.gender = input.gender;
+        entry.inputMode = input.inputMode;
+        entry.zoukan_mode = input.zoukanMode;
+        entry.result = result;
+        entry.savedAt = new Date().toISOString();
+      }
+
+      function handleCalculate() {
+        const input = readFormInput();
+        if (input.error) {
+          setStatus(elements.fortuneStatus, input.error, "error");
+          return;
+        }
+
+        try {
+          currentInput = cloneDeep(input);
+          currentResult = computeChart(currentInput, state.settings);
+          const historyEntry = createHistoryEntry(input, currentResult);
+          currentHistoryId = historyEntry.id;
+          state.history.unshift(historyEntry);
+          state.history = state.history.slice(0, DEFAULT_HISTORY_LIMIT);
+          saveState();
+          renderCurrentResult(currentInput, currentResult);
+          renderHistory();
+          syncResultZoukanModeButtons(currentInput.zoukanMode);
+          setStatus(elements.fortuneStatus, "命式を算出して履歴へ保存しました。", "success");
+        } catch (error) {
+          setStatus(elements.fortuneStatus, error && error.message ? error.message : "命式の算出に失敗しました。", "error");
+        }
+      }
+
+      function createHistoryEntry(input, result) {
+        const id = globalThis.crypto && typeof globalThis.crypto.randomUUID === "function"
+          ? globalThis.crypto.randomUUID()
+          : `hist-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        const now = new Date().toISOString();
+        return {
+          id,
+          name: input.name,
+          birthdate: formatDateParts(input.birthDate),
+          birthtime: input.birthTime ? `${pad(input.birthTime.hour)}:${pad(input.birthTime.minute)}` : "",
+          birthplace: input.birthPlace || "",
+          birthtimeUnknown: input.birthTimeUnknown,
+          gender: input.gender,
+          inputMode: input.inputMode,
+          zoukan_mode: input.zoukanMode,
+          result,
+          memo: "",
+          tags: [],
+          createdAt: now,
+          savedAt: now
+        };
+      }
+
+      function renderRelationBadges(badges) {
+        if (!Array.isArray(badges) || !badges.length) {
+          return `<span class="pill-cell">${escapeHtml(EMPTY_DISPLAY)}</span>`;
+        }
+        return `
+          <div class="relation-badges">
+            ${badges.map((badge) => `<span class="rel-badge rel-${badge.color}">${escapeHtml(badge.label)}</span>`).join("")}
+          </div>
+        `;
+      }
+
+      function handleResultZoukanModeSwitch(event) {
+        const button = event.target.closest("[data-result-zoukan-mode]");
+        if (!button || !currentInput) return;
+        const nextMode = button.dataset.resultZoukanMode === "custom" ? "custom" : "honki";
+        if (currentInput.zoukanMode === nextMode) return;
+        currentInput.zoukanMode = nextMode;
+        elements.zoukanModeInput.value = nextMode;
+        try {
+          currentResult = computeChart(currentInput, state.settings);
+          updateCurrentHistoryEntry(currentInput, currentResult);
+          saveState();
+          renderCurrentResult(currentInput, currentResult);
+          renderHistory();
+          syncResultZoukanModeButtons(nextMode);
+          setStatus(elements.fortuneStatus, `鑑定結果の蔵干モードを${nextMode === "custom" ? "通常" : "本気のみ"}に切り替えました。`, "success");
+        } catch (error) {
+          setStatus(elements.fortuneStatus, error && error.message ? error.message : "蔵干モードの切替に失敗しました。", "error");
+        }
+      }
+
+      function renderTrendCard(item) {
+        return `
+          <article class="trend-card${item.isCurrent ? " is-current" : ""}">
+            <h4>${escapeHtml(item.label)}</h4>
+            <p>${escapeHtml(item.tenkan)}${escapeHtml(item.chishi)}</p>
+            <p>通変星: ${escapeHtml(item.tsuhensei)}</p>
+            <p>蔵干通変: ${escapeHtml(item.zoukanTsuhensei)}</p>
+            <p>十二運: ${escapeHtml(item.juuniun)}</p>
+            <p>${escapeHtml(formatDateTimeJst(item.startDate))}〜</p>
+            <div class="trend-badge-row">${renderRelationBadges(item.relationBadges || [])}</div>
+            <span class="trend-pill">${item.isCurrent ? "現在" : "推移"}</span>
+          </article>
+        `;
+      }
+
+      function renderCurrentResult(input, result) {
+        elements.resultEmptyState.classList.add("hidden");
+        elements.resultPanel.classList.remove("hidden");
+
+        const displayName = input.name || "未登録";
+        const birthTimeText = input.birthTimeUnknown ? "不明" : `${pad(input.birthTime.hour)}:${pad(input.birthTime.minute)}`;
+        const currentMonthItem = result.monthLuck.list.find((item) => item.isCurrent) || result.monthLuck.list[0];
+        const currentDayItem = result.dayLuck.list.find((item) => item.isCurrent) || result.dayLuck.list[0];
+        const kuuboText = result.kuubou.length ? result.kuubou.join("・") : EMPTY_DISPLAY;
+        const birthPlaceText = input.birthPlace ? ` / ${escapeHtml(input.birthPlace)}` : "";
+        const timeCorrectionBody = input.birthTimeUnknown
+          ? "出生時刻不明のため補正なし"
+          : `${escapeHtml(result.meta.regionalOffsetLabel || "+0分")} / 補正後 ${escapeHtml(result.meta.correctedBirthTimeText || birthTimeText)}${result.meta.dayShiftLabel ? ` (${escapeHtml(result.meta.dayShiftLabel)})` : ""}`;
+
+        elements.resultSummaryGrid.innerHTML = [
+          {
+            title: "入力情報",
+            body: `${escapeHtml(displayName)} / ${escapeHtml(formatDateParts(input.birthDate))} / ${escapeHtml(birthTimeText)}${birthPlaceText} / ${input.gender === "male" ? "男性" : "女性"}`
+          },
+          {
+            title: "月支通変星",
+            body: `${escapeHtml(result.zoukan.month)} → ${escapeHtml(result.zoukanTsuhensei.month)}`,
+            className: "is-month-focus"
+          },
+          {
+            title: "空亡",
+            body: `${escapeHtml(kuuboText)}`
+          },
+          {
+            title: "時差補正",
+            body: timeCorrectionBody
+          },
+          {
+            title: "現在の月運",
+            body: currentMonthItem ? `${escapeHtml(currentMonthItem.tenkan)}${escapeHtml(currentMonthItem.chishi)} / ${escapeHtml(currentMonthItem.tsuhensei)}` : EMPTY_DISPLAY,
+            badges: currentMonthItem ? currentMonthItem.relationBadges : []
+          },
+          {
+            title: "現在の日運",
+            body: currentDayItem ? `${escapeHtml(currentDayItem.tenkan)}${escapeHtml(currentDayItem.chishi)} / ${escapeHtml(currentDayItem.tsuhensei)}` : EMPTY_DISPLAY,
+            badges: currentDayItem ? currentDayItem.relationBadges : []
+          },
+          {
+            title: "節入り",
+            body: `${escapeHtml(result.meta.currentTermName)}: ${escapeHtml(result.meta.currentTermJst)}`
+          },
+          {
+            title: "立春",
+            body: `${escapeHtml(result.meta.liChunJst)}`
+          }
+        ].map((item) => {
+          return `
+            <div class="summary-card${item.className ? " " + item.className : ""}">
+              <h3>${item.title}</h3>
+              <p>${item.body}</p>
+              ${item.badges && item.badges.length ? `<div class="summary-badge-row">${item.badges.map((badge) => `<span class="rel-badge rel-${badge.color}">${escapeHtml(badge.label)}</span>`).join("")}</div>` : ""}
+            </div>
+          `;
+        }).join("");
+
+        const rowDefs = [
+          { label: "天干", key: "tenkan", type: "stem" },
+          { label: "地支", key: "chishi", type: "branch" },
+          { label: "通変星", key: "tsuhensei", type: "tsuhensei" },
+          { label: "十二運", key: "juuniunsei", type: "juuniun" },
+          { label: "蔵干", key: "zoukan", type: "zoukan" },
+          { label: "蔵干通変星", key: "zoukanTsuhensei", type: "tsuhensei" },
+          { label: "関係", key: "natalRelations", type: "relations" }
+        ];
+        const columns = ["hour", "day", "month", "year"];
+
+        elements.pillarsTableBody.innerHTML = rowDefs.map((row) => {
+          const cells = columns.map((column) => {
+            const tdClass = column === "month" ? ' class="is-month-column"' : "";
+            if (row.key === "natalRelations") {
+              return `<td${tdClass}>${renderRelationBadges(result.natalRelations[column])}</td>`;
+            }
+            const value = row.key === "tenkan"
+              ? result.pillars[column].tenkan
+              : row.key === "chishi"
+                ? (result.pillars[column].unknown ? "不明" : result.pillars[column].chishi)
+                : result[row.key][column];
+            const display = value || EMPTY_DISPLAY;
+            const tooltip = buildTooltipText(row.type, display);
+            const isKuubo = row.key === "chishi" && result.kuubou.includes(display);
+            const isMonthColumn = column === "month";
+            const cellClass = `${isKuubo ? " is-kuubo" : ""}${isMonthColumn ? " is-month-focus" : ""}`;
+            if (!tooltip) {
+              return `<td${tdClass}><span class="pill-cell${cellClass}">${escapeHtml(display)}</span></td>`;
+            }
+            return `
+              <td${tdClass}>
+                <button
+                  class="pill-cell${cellClass}"
+                  type="button"
+                  data-tooltip="${escapeHtml(tooltip)}"
+                >${escapeHtml(display)}</button>
+              </td>
+            `;
+          }).join("");
+          return `<tr><th class="pill-row-head">${row.label}</th>${cells}</tr>`;
+        }).join("");
+
+        elements.resultNotes.innerHTML = result.notes.length
+          ? result.notes.map((note) => `<div class="note-item">${escapeHtml(note)}</div>`).join("")
+          : "";
+
+        elements.taiunMeta.textContent =
+          `起運: ${result.taiun.startAge.toFixed(1)}歳 / ${result.taiun.direction} / 基準節: ${result.taiun.targetTerm.name} (${formatDateTimeJst(result.taiun.targetTerm.date)})`;
+
+        elements.taiunTimeline.innerHTML = result.taiun.list.map((item) => {
+          return `
+            <article class="taiun-card${item.isCurrent ? " is-current" : ""}">
+              <h3>${item.tenkan}${item.chishi}</h3>
+              <p>${item.startAge.toFixed(1)}歳〜${item.endAge.toFixed(1)}歳</p>
+              <p>開始年の目安: ${item.startYear}年</p>
+              <p>${item.isCurrent ? "現在の大運" : "大運"}</p>
+            </article>
+          `;
+        }).join("");
+
+        elements.monthLuckMeta.textContent =
+          `現在の月運: ${result.monthLuck.currentTermName}入り ${formatDateTimeJst(result.monthLuck.currentStartDate)} / 次の切替: ${result.monthLuck.nextTermName} ${formatDateTimeJst(result.monthLuck.nextStartDate)}`;
+        elements.monthLuckTimeline.innerHTML = result.monthLuck.list.map(renderTrendCard).join("");
+
+        elements.dayLuckMeta.textContent =
+          `現在の日運: ${result.dayLuck.currentDateLabel} / 切替: ${formatDateTimeJst(result.dayLuck.currentStartDate)} 〜 ${formatDateTimeJst(result.dayLuck.nextStartDate)}`;
+        elements.dayLuckTimeline.innerHTML = result.dayLuck.list.map(renderTrendCard).join("");
+      }
+
+      function handleSaveCurrent() {
+        if (!currentHistoryId) {
+          setStatus(elements.fortuneStatus, "先に命式を算出してください。", "warning");
+          return;
+        }
+        const entry = state.history.find((item) => item.id === currentHistoryId);
+        if (!entry) {
+          setStatus(elements.fortuneStatus, "最新の履歴が見つかりませんでした。", "error");
+          return;
+        }
+        const initialName = elements.nameInput.value.trim() || entry.name || "";
+        const name = window.prompt("履歴に保存する名前を入力してください。", initialName);
+        if (name == null) return;
+        entry.name = name.trim();
+        entry.savedAt = new Date().toISOString();
+        saveState();
+        renderHistory();
+        setStatus(elements.fortuneStatus, "履歴の名前を保存しました。", "success");
+      }
+
+      function clearForm() {
+        currentInput = null;
+        currentResult = null;
+        currentHistoryId = "";
+        elements.nameInput.value = "";
+        elements.birthYearInput.value = "";
+        elements.birthMonthInput.value = "";
+        elements.birthDayInput.value = "";
+        elements.currentAgeInput.value = "";
+        elements.birthdayMonthInput.value = "";
+        elements.birthdayDayInput.value = "";
+        elements.birthTimeInput.value = "";
+        elements.birthPlaceInput.value = "";
+        elements.birthTimeUnknownInput.checked = false;
+        elements.genderInput.value = "";
+        elements.zoukanModeInput.value = state.settings.defaultMode;
+        document.querySelector('input[name="birthInputMode"][value="direct"]').checked = true;
+        syncBirthInputModeUi();
+        syncBirthTimeUnknownState();
+        syncResultZoukanModeButtons(state.settings.defaultMode);
+        elements.resultPanel.classList.add("hidden");
+        elements.resultEmptyState.classList.remove("hidden");
+        renderReversePreview();
+        setStatus(elements.fortuneStatus, "", "");
+      }
+
+      function switchTab(tabName) {
+        elements.tabButtons.forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.tabTarget === tabName);
+        });
+        elements.tabPanels.forEach((panel) => {
+          panel.hidden = panel.dataset.tabPanel !== tabName;
+        });
+      }
+
+      function renderHistory() {
+        const keyword = elements.historySearchInput.value.trim().toLowerCase();
+        const items = state.history.filter((entry) => {
+          if (!keyword) return true;
+          const monthZoukanTsuhensei = entry.result.zoukanTsuhensei && entry.result.zoukanTsuhensei.month
+            ? entry.result.zoukanTsuhensei.month
+            : "";
+          const searchBase = [
+            entry.name,
+            entry.birthdate,
+            entry.birthtime,
+            entry.birthplace,
+            entry.memo,
+            entry.tags.join(" "),
+            entry.result.pillars.day.tenkan,
+            entry.result.pillars.day.chishi,
+            entry.result.pillars.year.tenkan,
+            entry.result.pillars.month.tenkan,
+            monthZoukanTsuhensei
+          ].join(" ").toLowerCase();
+          return searchBase.includes(keyword);
+        });
+
+        if (!items.length) {
+          elements.historyList.innerHTML = '<p class="history-empty">履歴はまだありません。</p>';
+          return;
+        }
+
+        elements.historyList.innerHTML = items.map((entry) => {
+          const title = entry.name || "未登録";
+          const birthTimeText = entry.birthtimeUnknown ? "不明" : (entry.birthtime || "不明");
+          const kuuboText = Array.isArray(entry.result.kuubou) && entry.result.kuubou.length ? entry.result.kuubou.join("・") : EMPTY_DISPLAY;
+          const monthFocusText = entry.result.zoukanTsuhensei && entry.result.zoukanTsuhensei.month
+            ? `${entry.result.zoukan.month} → ${entry.result.zoukanTsuhensei.month}`
+            : EMPTY_DISPLAY;
+          return `
+            <details class="history-item" data-history-id="${entry.id}">
+              <summary class="history-summary">
+                <div class="history-title">
+                  <span class="history-name">${escapeHtml(title)}</span>
+                  <span class="history-pill">日干 ${escapeHtml(entry.result.pillars.day.tenkan || EMPTY_DISPLAY)}</span>
+                </div>
+                <div class="history-meta">
+                  ${escapeHtml(entry.birthdate)} / ${escapeHtml(birthTimeText)}${entry.birthplace ? ` / ${escapeHtml(entry.birthplace)}` : ""} / 保存: ${escapeHtml(new Date(entry.savedAt).toLocaleString("ja-JP"))}
+                </div>
+              </summary>
+              <div class="history-body">
+                <div class="history-grid">
+                  <div class="history-mini">
+                    <h4>四柱</h4>
+                    <p>時柱: ${escapeHtml(entry.result.pillars.hour.tenkan || "")}${escapeHtml(entry.result.pillars.hour.chishi || "不明")}</p>
+                    <p>日柱: ${escapeHtml(entry.result.pillars.day.tenkan)}${escapeHtml(entry.result.pillars.day.chishi)}</p>
+                    <p>月柱: ${escapeHtml(entry.result.pillars.month.tenkan)}${escapeHtml(entry.result.pillars.month.chishi)}</p>
+                    <p>年柱: ${escapeHtml(entry.result.pillars.year.tenkan)}${escapeHtml(entry.result.pillars.year.chishi)}</p>
+                  </div>
+                  <div class="history-mini">
+                    <h4>要点</h4>
+                    <p>空亡: ${escapeHtml(kuuboText)}</p>
+                    <p>月支通変: ${escapeHtml(monthFocusText)}</p>
+                    <p>起運: ${entry.result.taiun.startAge.toFixed(1)}歳 / ${escapeHtml(entry.result.taiun.direction)}</p>
+                    <p>出生地: ${escapeHtml(entry.birthplace || EMPTY_DISPLAY)}</p>
+                    <p>蔵干モード: ${entry.zoukan_mode === "custom" ? "流派式" : "本気"}</p>
+                  </div>
+                </div>
+                <div class="history-actions">
+                  <input type="text" data-history-field="name" value="${escapeHtml(entry.name)}" placeholder="名前">
+                  <input type="text" data-history-field="tags" value="${escapeHtml(entry.tags.join(", "))}" placeholder="タグ（カンマ区切り）">
+                </div>
+                <div class="field">
+                  <label>メモ</label>
+                  <textarea data-history-field="memo" placeholder="自由メモ">${escapeHtml(entry.memo)}</textarea>
+                </div>
+                <div class="history-actions">
+                  <button class="btn btn-secondary" type="button" data-history-action="save">変更を保存</button>
+                  <button class="btn btn-danger" type="button" data-history-action="delete">削除</button>
+                </div>
+                <div class="history-tagline">入力方法: ${entry.inputMode === "reverse" ? "年齢から逆算" : "直接入力"}</div>
+              </div>
+            </details>
+          `;
+        }).join("");
+
+        elements.historyList.querySelectorAll("[data-history-action]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const container = button.closest("[data-history-id]");
+            if (!container) return;
+            const id = container.dataset.historyId;
+            if (button.dataset.historyAction === "save") {
+              saveHistoryEntryEdits(id, container);
+            } else if (button.dataset.historyAction === "delete") {
+              deleteHistoryEntry(id);
+            }
+          });
+        });
+      }
+
+      function saveHistoryEntryEdits(id, container) {
+        const entry = state.history.find((item) => item.id === id);
+        if (!entry) return;
+        const nameEl = container.querySelector('[data-history-field="name"]');
+        const tagsEl = container.querySelector('[data-history-field="tags"]');
+        const memoEl = container.querySelector('[data-history-field="memo"]');
+        entry.name = nameEl ? nameEl.value.trim() : entry.name;
+        entry.memo = memoEl ? memoEl.value.trim() : entry.memo;
+        entry.tags = tagsEl
+          ? tagsEl.value.split(",").map((item) => item.trim()).filter(Boolean)
+          : entry.tags;
+        entry.savedAt = new Date().toISOString();
+        saveState();
+        renderHistory();
+        setStatus(elements.historyStatus, "履歴を更新しました。", "success");
+      }
+
+      function deleteHistoryEntry(id) {
+        const entry = state.history.find((item) => item.id === id);
+        if (!entry) return;
+        const name = entry.name || entry.birthdate;
+        if (!window.confirm(`「${name}」の履歴を削除しますか？`)) return;
+        state.history = state.history.filter((item) => item.id !== id);
+        if (currentHistoryId === id) {
+          currentHistoryId = "";
+        }
+        saveState();
+        renderHistory();
+        setStatus(elements.historyStatus, "履歴を削除しました。", "success");
+      }
+
+      function exportJson() {
+        const payload = {
+          version: state.version,
+          exportedAt: new Date().toISOString(),
+          settings: state.settings,
+          history: state.history
+        };
+        downloadTextFile(
+          `shichusuimei-history-${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
+          JSON.stringify(payload, null, 2),
+          "application/json;charset=utf-8"
+        );
+        setStatus(elements.historyStatus, "JSONをエクスポートしました。", "success");
+      }
+
+      function importJson(event) {
+        const file = event.target.files && event.target.files[0];
+        elements.importJsonInput.value = "";
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(typeof reader.result === "string" ? reader.result : "{}");
+            const settings = parsed.settings && typeof parsed.settings === "object" ? parsed.settings : {};
+            const importedHistory = Array.isArray(parsed.history) ? parsed.history : [];
+            state.settings.defaultMode = settings.defaultMode === "custom" ? "custom" : "honki";
+            state.settings.theme = settings.theme === "dark" ? "dark" : "light";
+            state.settings.customZoukan = normalizeCustomZoukanInput(settings.customZoukan);
+            state.history = importedHistory.map(sanitizeHistoryEntry).filter(Boolean).slice(0, DEFAULT_HISTORY_LIMIT);
+            saveState();
+            applyStateToUi();
+            renderHistory();
+            setStatus(elements.historyStatus, `${state.history.length}件の履歴をインポートしました。`, "success");
+          } catch (error) {
+            setStatus(elements.historyStatus, "JSONの読み込みに失敗しました。形式を確認してください。", "error");
+          }
+        };
+        reader.onerror = () => {
+          setStatus(elements.historyStatus, "ファイルの読み込みに失敗しました。", "error");
+        };
+        reader.readAsText(file, "utf-8");
+      }
+
+      function clearHistory() {
+        if (!state.history.length) {
+          setStatus(elements.historyStatus, "削除する履歴がありません。", "warning");
+          return;
+        }
+        if (!window.confirm("履歴をすべて削除しますか？")) return;
+        state.history = [];
+        currentHistoryId = "";
+        saveState();
+        renderHistory();
+        setStatus(elements.historyStatus, "履歴を全削除しました。", "success");
+      }
+
+      function handleSettingsChanged() {
+        state.settings.defaultMode = elements.defaultZoukanModeInput.value === "custom" ? "custom" : "honki";
+        syncEditorToCustomZoukan();
+        saveState();
+      }
+
+      function handleThemeChanged() {
+        state.settings.theme = elements.themeInput.value === "dark" ? "dark" : "light";
+        elements.body.dataset.theme = state.settings.theme;
+        saveState();
+        setStatus(elements.settingsStatus, "テーマを保存しました。", "success");
+      }
+
+      function saveSettings() {
+        state.settings.defaultMode = elements.defaultZoukanModeInput.value === "custom" ? "custom" : "honki";
+        state.settings.theme = elements.themeInput.value === "dark" ? "dark" : "light";
+        syncEditorToCustomZoukan();
+        elements.body.dataset.theme = state.settings.theme;
+        elements.zoukanModeInput.value = state.settings.defaultMode;
+        saveState();
+        setStatus(elements.settingsStatus, "設定を保存しました。", "success");
+      }
+
+      function resetAllData() {
+        if (!window.confirm("履歴と設定をすべて初期化しますか？")) return;
+        const fresh = cloneDeep(DEFAULT_STATE);
+        state.settings = fresh.settings;
+        state.history = [];
+        currentHistoryId = "";
+        currentResult = null;
+        currentInput = null;
+        saveState();
+        applyStateToUi();
+        renderHistory();
+        elements.resultPanel.classList.add("hidden");
+        elements.resultEmptyState.classList.remove("hidden");
+        elements.resultNotes.innerHTML = "";
+        elements.pillarsTableBody.innerHTML = "";
+        elements.resultSummaryGrid.innerHTML = "";
+        elements.taiunTimeline.innerHTML = "";
+        elements.taiunMeta.textContent = "まだ計算されていません。";
+        elements.monthLuckTimeline.innerHTML = "";
+        elements.dayLuckTimeline.innerHTML = "";
+        elements.monthLuckMeta.textContent = "まだ計算されていません。";
+        elements.dayLuckMeta.textContent = "まだ計算されていません。";
+        setStatus(elements.settingsStatus, "全データを初期化しました。", "success");
+      }
+
+      function downloadTextFile(filename, content, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = filename;
+        anchor.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function setStatus(target, message, type) {
+        target.textContent = message || "";
+        target.className = "status";
+        if (type) target.classList.add(type);
+      }
+
+      function handleTooltipClick(event) {
+        const trigger = event.target.closest("[data-tooltip]");
+        if (!trigger) {
+          if (!elements.tooltip.contains(event.target)) {
+            hideTooltip();
+          }
+          return;
+        }
+        if (activeTooltipAnchor === trigger) {
+          hideTooltip();
+          return;
+        }
+        showTooltip(trigger);
+      }
+
+      function handleTooltipHover(event) {
+        if (!window.matchMedia("(hover: hover)").matches) return;
+        const trigger = event.target.closest("[data-tooltip]");
+        if (!trigger) return;
+        showTooltip(trigger);
+      }
+
+      function handleTooltipLeave(event) {
+        if (!window.matchMedia("(hover: hover)").matches) return;
+        const trigger = event.target.closest("[data-tooltip]");
+        if (!trigger) return;
+        if (event.relatedTarget && trigger.contains(event.relatedTarget)) return;
+        hideTooltip();
+      }
+
+      function showTooltip(trigger) {
+        const text = trigger.dataset.tooltip || "";
+        if (!text) return;
+        activeTooltipAnchor = trigger;
+        elements.tooltip.textContent = text;
+        const rect = trigger.getBoundingClientRect();
+        const width = 220;
+        const left = Math.max(8, Math.min(window.innerWidth - width - 8, rect.left + rect.width / 2 - width / 2));
+        const top = Math.max(8, rect.top - 10 - 70);
+        elements.tooltip.style.left = `${left}px`;
+        elements.tooltip.style.top = `${top}px`;
+        elements.tooltip.classList.add("visible");
+      }
+
+      function hideTooltip() {
+        activeTooltipAnchor = null;
+        elements.tooltip.classList.remove("visible");
+      }
+    })();
+  </script>
+</body>
+</html>

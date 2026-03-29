@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生年月日逆算ツール</title>
+  <style>
+    :root {
+      --bg: #f4f7f9;
+      --card: #ffffff;
+      --line: #d7e0e7;
+      --text: #1d2a33;
+      --sub: #586b78;
+      --accent: #005bbb;
+      --accent-strong: #00428a;
+      --danger: #b00020;
+      --shadow: 0 8px 24px rgba(14, 32, 58, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top left, #e8f2ff, var(--bg) 42%);
+    }
+
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 1.8rem;
+    }
+
+    .subtitle {
+      margin: 0 0 20px;
+      color: var(--sub);
+      line-height: 1.5;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .people-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .person-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      background: #fbfdff;
+    }
+
+    .person-card h2 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--sub);
+      margin-bottom: 4px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid #c5d2dd;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .birthday-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .result {
+      min-height: 2.2rem;
+      margin-top: 2px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background: #eef5ff;
+    }
+
+    .result.error {
+      background: #ffecef;
+      color: var(--danger);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    #calcBtn {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    #calcBtn:hover {
+      background: var(--accent-strong);
+    }
+
+    #clearHistoryBtn {
+      background: #f0f2f5;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    #undoHistoryBtn {
+      background: #fff4e0;
+      color: #7a4b00;
+      border: 1px solid #f0d2a6;
+    }
+
+    #exportJsonBtn,
+    #exportCsvBtn,
+    #importJsonBtn,
+    #clearFilterBtn {
+      background: #eef3f8;
+      color: var(--text);
+      border: 1px solid #ccd8e2;
+    }
+
+    #tzCalcBtn {
+      background: #0a7a43;
+      color: #fff;
+    }
+
+    #tzCalcBtn:hover {
+      background: #085f34;
+    }
+
+    .history-empty {
+      color: var(--sub);
+      margin: 0;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .history-item {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: #fafcfe;
+    }
+
+    .history-time {
+      font-size: 0.85rem;
+      color: var(--sub);
+      margin-bottom: 8px;
+    }
+
+    .history-item ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .history-tools {
+      margin-top: 10px;
+    }
+
+    .history-filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .history-filter-grid input {
+      margin-bottom: 0;
+    }
+
+    .history-status {
+      margin-top: 8px;
+      font-size: 0.84rem;
+      color: var(--sub);
+      min-height: 1.2em;
+    }
+
+    .history-status.error {
+      color: var(--danger);
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .history-delete-btn {
+      background: #ffecef;
+      color: #7d1021;
+      border: 1px solid #f3bcc4;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+    }
+
+    .history-delete-btn:hover {
+      background: #ffdce2;
+    }
+
+    .history-memo-wrap {
+      margin-top: 8px;
+      border-top: 1px dashed var(--line);
+      padding-top: 8px;
+    }
+
+    .history-memo-label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--sub);
+      margin-bottom: 4px;
+    }
+
+    .history-memo-input {
+      width: 100%;
+      min-height: 62px;
+      resize: vertical;
+      border: 1px solid #c5d2dd;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.92rem;
+      font-family: inherit;
+    }
+
+    .history-memo-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+
+    .history-memo-save {
+      background: #eef3f8;
+      color: var(--text);
+      border: 1px solid #ccd8e2;
+      padding: 7px 10px;
+      font-size: 0.82rem;
+    }
+
+    .memo-entry {
+      margin-top: 12px;
+      max-width: 560px;
+    }
+
+    .memo-entry input {
+      margin-bottom: 0;
+    }
+
+    .hint {
+      font-size: 0.85rem;
+      color: var(--sub);
+      margin: 6px 0 0;
+      line-height: 1.45;
+    }
+
+    .tz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 250px));
+      gap: 8px 12px;
+      justify-content: start;
+      align-items: end;
+    }
+
+    .tz-grid label {
+      font-size: 0.84rem;
+    }
+
+    .tz-grid input {
+      font-size: 0.95rem;
+      padding: 7px 9px;
+      margin-bottom: 6px;
+    }
+
+    .tz-result {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #eef8f2;
+      line-height: 1.5;
+      white-space: pre-line;
+      min-height: 44px;
+    }
+
+    .tz-result.error {
+      background: #ffecef;
+      color: var(--danger);
+    }
+
+    .quick-link-panel {
+      border: none;
+      background: linear-gradient(125deg, #0a2d55, #103d73 60%, #14508e);
+      color: #eaf4ff;
+      box-shadow: 0 12px 28px rgba(16, 52, 94, 0.22);
+    }
+
+    .quick-link-panel h2 {
+      margin-top: 0;
+      color: #f2f8ff;
+    }
+
+    .quick-link-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mania-link {
+      display: block;
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: #f7fbff;
+      background: rgba(255, 255, 255, 0.08);
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    .mania-link:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .mania-link-title {
+      display: block;
+      font-size: 1.08rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .mania-link-sub {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.9rem;
+      color: rgba(234, 244, 255, 0.85);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>生年月日 逆算ツール</h1>
+    <p class="subtitle" id="todayText"></p>
+
+    <section class="panel">
+      <div class="people-grid" id="peopleGrid"></div>
+      <div class="actions">
+        <button id="calcBtn" type="button">生年月日を逆算する</button>
+      </div>
+      <div class="memo-entry">
+        <label for="historyMemoInput">今回の履歴メモ（任意）</label>
+        <input id="historyMemoInput" type="text" maxlength="120" placeholder="例: 友人2人ぶんを確認">
+      </div>
+      <p class="hint">
+        年齢と誕生日（月日）が分かる人の生年月日を推定します。最大2人まで入力できます。
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>日本内時差の補正（任意）</h2>
+      <div class="tz-grid">
+        <div>
+          <label for="birthTimeInput">出生時間（24時間）</label>
+          <input id="birthTimeInput" type="time">
+        </div>
+        <div>
+          <label for="birthPlaceInput">出生場所（都道府県から選択）</label>
+          <input id="birthPlaceInput" type="text" list="birthPlaceOptions" placeholder="例: 東京都">
+          <datalist id="birthPlaceOptions"></datalist>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="tzCalcBtn" type="button">日本内時差を補正する</button>
+      </div>
+      <div id="tzResult" class="tz-result">未計算</div>
+    </section>
+
+    <section class="panel">
+      <h2>履歴</h2>
+      <div class="history-tools">
+        <div class="history-filter-grid">
+          <div>
+            <label for="historySearchInput">検索（名前/メモ/日付）</label>
+            <input id="historySearchInput" type="text" placeholder="例: 山田 / 2026-02-11">
+          </div>
+          <div>
+            <label for="historyDateInput">日付で絞り込み</label>
+            <input id="historyDateInput" type="date">
+          </div>
+        </div>
+        <div class="actions">
+          <button id="clearFilterBtn" type="button">絞り込み解除</button>
+          <button id="clearHistoryBtn" type="button">履歴をクリア</button>
+          <button id="undoHistoryBtn" type="button" hidden>取り消す</button>
+          <button id="exportJsonBtn" type="button">JSON出力</button>
+          <button id="exportCsvBtn" type="button">CSV出力</button>
+          <button id="importJsonBtn" type="button">JSON取込</button>
+          <input id="historyImportInput" type="file" accept=".json,application/json" hidden>
+        </div>
+        <p id="historyStatus" class="history-status"></p>
+      </div>
+      <div id="historyContainer"></div>
+    </section>
+
+    <section class="panel quick-link-panel">
+      <h2>外部リンク</h2>
+      <div class="quick-link-list">
+        <a
+          class="mania-link"
+          href="https://www.koufuku.ne.jp/cgi-bin/unseiall.cgi"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="mania-link-title">マニアック四柱推命</span>
+          <span class="mania-link-sub">すぐ開く（別タブ）</span>
+        </a>
+        <a
+          class="mania-link"
+          href="https://www.starcrawler.net/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span class="mania-link-title">紫微斗数スタークローラー</span>
+          <span class="mania-link-sub">すぐ開く（別タブ）</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const MAX_PEOPLE = 2;
+    const HISTORY_KEY = "seinengappi_history_v1";
+    const HISTORY_LIMIT = 100;
+    const JST_STANDARD_LONGITUDE = 135;
+    const BIRTH_PLACE_DATA = [
+      { name: "北海道", longitude: 141.3545, aliases: ["札幌", "札幌市"] },
+      { name: "青森県", longitude: 140.7400, aliases: ["青森", "青森市"] },
+      { name: "岩手県", longitude: 141.1527, aliases: ["盛岡", "盛岡市"] },
+      { name: "宮城県", longitude: 140.8719, aliases: ["仙台", "仙台市"] },
+      { name: "秋田県", longitude: 140.1025, aliases: ["秋田", "秋田市"] },
+      { name: "山形県", longitude: 140.3633, aliases: ["山形", "山形市"] },
+      { name: "福島県", longitude: 140.4676, aliases: ["福島", "福島市"] },
+      { name: "茨城県", longitude: 140.4468, aliases: ["水戸", "水戸市"] },
+      { name: "栃木県", longitude: 139.8836, aliases: ["宇都宮", "宇都宮市"] },
+      { name: "群馬県", longitude: 139.0608, aliases: ["前橋", "前橋市"] },
+      { name: "埼玉県", longitude: 139.6489, aliases: ["さいたま", "さいたま市"] },
+      { name: "千葉県", longitude: 140.1233, aliases: ["千葉", "千葉市"] },
+      { name: "東京都", longitude: 139.6917, aliases: ["東京", "東京23区"] },
+      { name: "神奈川県", longitude: 139.6380, aliases: ["横浜", "横浜市"] },
+      { name: "新潟県", longitude: 139.0232, aliases: ["新潟", "新潟市"] },
+      { name: "富山県", longitude: 137.2137, aliases: ["富山", "富山市"] },
+      { name: "石川県", longitude: 136.6562, aliases: ["金沢", "金沢市"] },
+      { name: "福井県", longitude: 136.2216, aliases: ["福井", "福井市"] },
+      { name: "山梨県", longitude: 138.5684, aliases: ["甲府", "甲府市"] },
+      { name: "長野県", longitude: 138.1810, aliases: ["長野", "長野市"] },
+      { name: "岐阜県", longitude: 136.7607, aliases: ["岐阜", "岐阜市"] },
+      { name: "静岡県", longitude: 138.3831, aliases: ["静岡", "静岡市"] },
+      { name: "愛知県", longitude: 136.9066, aliases: ["名古屋", "名古屋市"] },
+      { name: "三重県", longitude: 136.5086, aliases: ["津", "津市"] },
+      { name: "滋賀県", longitude: 135.8686, aliases: ["大津", "大津市"] },
+      { name: "京都府", longitude: 135.7681, aliases: ["京都", "京都市"] },
+      { name: "大阪府", longitude: 135.5023, aliases: ["大阪", "大阪市"] },
+      { name: "兵庫県", longitude: 135.1955, aliases: ["神戸", "神戸市"] },
+      { name: "奈良県", longitude: 135.8048, aliases: ["奈良", "奈良市"] },
+      { name: "和歌山県", longitude: 135.1675, aliases: ["和歌山", "和歌山市"] },
+      { name: "鳥取県", longitude: 134.2381, aliases: ["鳥取", "鳥取市"] },
+      { name: "島根県", longitude: 133.0505, aliases: ["松江", "松江市"] },
+      { name: "岡山県", longitude: 133.9344, aliases: ["岡山", "岡山市"] },
+      { name: "広島県", longitude: 132.4553, aliases: ["広島", "広島市"] },
+      { name: "山口県", longitude: 131.4714, aliases: ["山口", "山口市"] },
+      { name: "徳島県", longitude: 134.5549, aliases: ["徳島", "徳島市"] },
+      { name: "香川県", longitude: 134.0466, aliases: ["高松", "高松市"] },
+      { name: "愛媛県", longitude: 132.7657, aliases: ["松山", "松山市"] },
+      { name: "高知県", longitude: 133.5311, aliases: ["高知", "高知市"] },
+      { name: "福岡県", longitude: 130.4017, aliases: ["福岡", "福岡市", "北九州", "北九州市"] },
+      { name: "佐賀県", longitude: 130.3009, aliases: ["佐賀", "佐賀市"] },
+      { name: "長崎県", longitude: 129.8737, aliases: ["長崎", "長崎市"] },
+      { name: "熊本県", longitude: 130.7417, aliases: ["熊本", "熊本市"] },
+      { name: "大分県", longitude: 131.6126, aliases: ["大分", "大分市"] },
+      { name: "宮崎県", longitude: 131.4239, aliases: ["宮崎", "宮崎市"] },
+      { name: "鹿児島県", longitude: 130.5581, aliases: ["鹿児島", "鹿児島市"] },
+      { name: "沖縄県", longitude: 127.6792, aliases: ["那覇", "那覇市", "沖縄"] }
+    ];
+    const birthPlaceLookup = new Map();
+
+    const peopleGrid = document.getElementById("peopleGrid");
+    const historyContainer = document.getElementById("historyContainer");
+    const historyMemoInput = document.getElementById("historyMemoInput");
+    const historySearchInput = document.getElementById("historySearchInput");
+    const historyDateInput = document.getElementById("historyDateInput");
+    const clearFilterBtn = document.getElementById("clearFilterBtn");
+    const undoHistoryBtn = document.getElementById("undoHistoryBtn");
+    const exportJsonBtn = document.getElementById("exportJsonBtn");
+    const exportCsvBtn = document.getElementById("exportCsvBtn");
+    const importJsonBtn = document.getElementById("importJsonBtn");
+    const historyImportInput = document.getElementById("historyImportInput");
+    const historyStatus = document.getElementById("historyStatus");
+    const birthPlaceOptions = document.getElementById("birthPlaceOptions");
+    const tzResult = document.getElementById("tzResult");
+    const todayText = document.getElementById("todayText");
+
+    let undoState = null;
+    let currentDateKey = "";
+    refreshCurrentDate(true);
+
+    initializeBirthPlaceOptions();
+
+    for (let i = 1; i <= MAX_PEOPLE; i += 1) {
+      const card = document.createElement("article");
+      card.className = "person-card";
+      card.innerHTML = `
+        <h2>${i}人目</h2>
+        <label for="name${i}">名前（任意）</label>
+        <input id="name${i}" type="text" placeholder="例: 山田 太郎">
+        <label for="age${i}">今の年齢</label>
+        <input id="age${i}" type="number" min="0" max="130" placeholder="例: 28">
+        <label>誕生日（月 / 日）</label>
+        <div class="birthday-row">
+          <input id="month${i}" type="number" min="1" max="12" placeholder="月">
+          <input id="day${i}" type="number" min="1" max="31" placeholder="日">
+        </div>
+        <div id="result${i}" class="result">未計算</div>
+      `;
+      peopleGrid.appendChild(card);
+    }
+
+    document.getElementById("calcBtn").addEventListener("click", calculateAll);
+    document.getElementById("clearHistoryBtn").addEventListener("click", clearHistory);
+    document.getElementById("tzCalcBtn").addEventListener("click", calculateJapaneseTimeAdjustment);
+    historySearchInput.addEventListener("input", renderHistory);
+    historyDateInput.addEventListener("change", renderHistory);
+    clearFilterBtn.addEventListener("click", clearHistoryFilters);
+    undoHistoryBtn.addEventListener("click", undoLastHistoryAction);
+    exportJsonBtn.addEventListener("click", exportHistoryAsJson);
+    exportCsvBtn.addEventListener("click", exportHistoryAsCsv);
+    importJsonBtn.addEventListener("click", () => {
+      historyImportInput.click();
+    });
+    historyImportInput.addEventListener("change", importHistoryFromJsonFile);
+    window.addEventListener("focus", () => {
+      refreshCurrentDate(false);
+    });
+    setInterval(() => {
+      refreshCurrentDate(false);
+    }, 60000);
+
+    renderHistory();
+
+    function calculateAll() {
+      const todayParts = refreshCurrentDate(false);
+      const computed = [];
+
+      for (let i = 1; i <= MAX_PEOPLE; i += 1) {
+        const name = getValue("name" + i);
+        const ageRaw = getValue("age" + i);
+        const monthRaw = getValue("month" + i);
+        const dayRaw = getValue("day" + i);
+        const resultEl = document.getElementById("result" + i);
+
+        if (!ageRaw && !monthRaw && !dayRaw && !name) {
+          resultEl.textContent = "未入力";
+          resultEl.classList.remove("error");
+          continue;
+        }
+
+        const age = Number(ageRaw);
+        const month = Number(monthRaw);
+        const day = Number(dayRaw);
+
+        if (!Number.isInteger(age) || age < 0 || age > 130) {
+          setError(resultEl, "年齢を0〜130で入力してください。");
+          continue;
+        }
+
+        if (!isValidMonthDay(month, day)) {
+          setError(resultEl, "誕生日（月/日）が正しくありません。");
+          continue;
+        }
+
+        const hasPassedThisYear =
+          todayParts.month > month || (todayParts.month === month && todayParts.day >= day);
+        const birthYear = hasPassedThisYear ? todayParts.year - age : todayParts.year - age - 1;
+
+        if (!isValidDate(birthYear, month, day)) {
+          setError(resultEl, "入力情報の整合性が取れません。年齢を確認してください。");
+          continue;
+        }
+
+        const birthDate = formatDate(birthYear, month, day);
+        const displayName = name || i + "人目";
+        resultEl.textContent = displayName + ": " + birthDate;
+        resultEl.classList.remove("error");
+        computed.push({ name: displayName, age: age, birthday: month + "/" + day, birthDate: birthDate });
+      }
+
+      if (computed.length > 0) {
+        saveHistory(computed, historyMemoInput.value.trim());
+        renderHistory();
+      }
+    }
+
+    function initializeBirthPlaceOptions() {
+      BIRTH_PLACE_DATA.forEach((place) => {
+        const option = document.createElement("option");
+        option.value = place.name;
+        birthPlaceOptions.appendChild(option);
+
+        birthPlaceLookup.set(normalizePlace(place.name), place.longitude);
+        place.aliases.forEach((alias) => {
+          birthPlaceLookup.set(normalizePlace(alias), place.longitude);
+        });
+      });
+    }
+
+    function getCurrentDateParts() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      const day = now.getDate();
+      return {
+        year: year,
+        month: month,
+        day: day,
+        dateKey: formatDate(year, month, day)
+      };
+    }
+
+    function refreshCurrentDate(force) {
+      const current = getCurrentDateParts();
+      if (force || current.dateKey !== currentDateKey) {
+        currentDateKey = current.dateKey;
+        todayText.textContent = "今日の基準日: " + current.dateKey;
+      }
+      return current;
+    }
+
+    function calculateJapaneseTimeAdjustment() {
+      const timeRaw = getValue("birthTimeInput");
+      const placeRaw = getValue("birthPlaceInput");
+
+      if (!timeRaw && !placeRaw) {
+        tzResult.textContent = "未入力";
+        tzResult.classList.remove("error");
+        return;
+      }
+
+      const parsed = /^(\d{2}):(\d{2})$/.exec(timeRaw);
+      if (!parsed) {
+        setTzError("出生時間（HH:MM）を入力してください。");
+        return;
+      }
+
+      const hour = Number(parsed[1]);
+      const minute = Number(parsed[2]);
+      if (!Number.isInteger(hour) || !Number.isInteger(minute) || hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+        setTzError("出生時間の形式が正しくありません。");
+        return;
+      }
+
+      const longitudeResult = resolveLongitude(placeRaw);
+      if (longitudeResult.error) {
+        setTzError(longitudeResult.error);
+        return;
+      }
+
+      const regionalOffsetMinutes = roundHalfAwayFromZero((longitudeResult.longitude - JST_STANDARD_LONGITUDE) * 4);
+      const baseTotal = hour * 60 + minute;
+      const adjustedTotal = baseTotal + regionalOffsetMinutes;
+      const normalizedTotal = normalizeToDayMinutes(adjustedTotal);
+      const dayShift = Math.floor((adjustedTotal - normalizedTotal) / 1440);
+      const adjustedHour = Math.floor(normalizedTotal / 60);
+      const adjustedMinute = normalizedTotal % 60;
+
+      const lines = [
+        "基準: " + longitudeResult.source + " / 東経 " + longitudeResult.longitude.toFixed(4) + "°",
+        "地域時差: " + formatSignedMinutes(regionalOffsetMinutes),
+        "補正後時刻: " + formatTime(adjustedHour, adjustedMinute) + "（" + getDayShiftLabel(dayShift) + "）"
+      ];
+      tzResult.textContent = lines.join("\n");
+      tzResult.classList.remove("error");
+    }
+
+    function getValue(id) {
+      return document.getElementById(id).value.trim();
+    }
+
+    function resolveLongitude(placeRaw) {
+      if (!placeRaw) {
+        return { longitude: JST_STANDARD_LONGITUDE, source: "出生場所未入力（基準子午線 135°E）" };
+      }
+
+      const hit = birthPlaceLookup.get(normalizePlace(placeRaw));
+      if (typeof hit !== "number") {
+        return { error: "出生場所は候補にある都道府県名で入力してください。" };
+      }
+      return { longitude: hit, source: "出生場所: " + placeRaw };
+    }
+
+    function normalizePlace(value) {
+      return String(value).replace(/\s/g, "").toLowerCase();
+    }
+
+    function normalizeToDayMinutes(totalMinutes) {
+      return ((totalMinutes % 1440) + 1440) % 1440;
+    }
+
+    function formatTime(hour, minute) {
+      return String(hour).padStart(2, "0") + ":" + String(minute).padStart(2, "0");
+    }
+
+    function formatSignedMinutes(minutes) {
+      const sign = minutes > 0 ? "+" : "";
+      return sign + String(minutes) + "分";
+    }
+
+    function roundHalfAwayFromZero(value) {
+      const abs = Math.abs(value);
+      const roundedAbs = Math.floor(abs + 0.5);
+      return value < 0 ? -roundedAbs : roundedAbs;
+    }
+
+    function getDayShiftLabel(dayShift) {
+      if (dayShift === 0) {
+        return "同日";
+      }
+      if (dayShift === 1) {
+        return "翌日";
+      }
+      if (dayShift === -1) {
+        return "前日";
+      }
+      if (dayShift > 1) {
+        return dayShift + "日後";
+      }
+      return Math.abs(dayShift) + "日前";
+    }
+
+    function isValidMonthDay(month, day) {
+      if (!Number.isInteger(month) || !Number.isInteger(day)) {
+        return false;
+      }
+      if (month < 1 || month > 12 || day < 1) {
+        return false;
+      }
+      const tempYear = 2000;
+      return isValidDate(tempYear, month, day);
+    }
+
+    function isValidDate(year, month, day) {
+      const date = new Date(year, month - 1, day);
+      return (
+        date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day
+      );
+    }
+
+    function formatDate(year, month, day) {
+      return (
+        String(year).padStart(4, "0") +
+        "-" +
+        String(month).padStart(2, "0") +
+        "-" +
+        String(day).padStart(2, "0")
+      );
+    }
+
+    function setError(element, message) {
+      element.textContent = message;
+      element.classList.add("error");
+    }
+
+    function setTzError(message) {
+      tzResult.textContent = message;
+      tzResult.classList.add("error");
+    }
+
+    function getHistory() {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      if (!raw) {
+        return [];
+      }
+      try {
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) {
+          return [];
+        }
+        return parsed
+          .map((entry) => sanitizeHistoryEntry(entry))
+          .filter((entry) => entry.items.length > 0);
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function setHistory(history) {
+      if (!Array.isArray(history) || history.length === 0) {
+        localStorage.removeItem(HISTORY_KEY);
+        return;
+      }
+      const sanitized = history
+        .map((entry) => sanitizeHistoryEntry(entry))
+        .filter((entry) => entry.items.length > 0)
+        .slice(0, HISTORY_LIMIT);
+      if (sanitized.length === 0) {
+        localStorage.removeItem(HISTORY_KEY);
+        return;
+      }
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(sanitized));
+    }
+
+    function sanitizeHistoryEntry(entry) {
+      const sourceEntry = entry && typeof entry === "object" ? entry : {};
+      const sourceItems = Array.isArray(sourceEntry.items) ? sourceEntry.items : [];
+      const items = sourceItems.map((person, index) => sanitizeHistoryPerson(person, index));
+      return {
+        createdAt: typeof sourceEntry.createdAt === "string" ? sourceEntry.createdAt : new Date().toISOString(),
+        memo: typeof sourceEntry.memo === "string" ? sourceEntry.memo : "",
+        items: items
+      };
+    }
+
+    function sanitizeHistoryPerson(person, index) {
+      const source = person && typeof person === "object" ? person : {};
+      const ageNum = Number(source.age);
+      return {
+        name: typeof source.name === "string" && source.name !== "" ? source.name : String(index + 1) + "人目",
+        age: Number.isFinite(ageNum) ? ageNum : "-",
+        birthday: typeof source.birthday === "string" && source.birthday !== "" ? source.birthday : "-",
+        birthDate: typeof source.birthDate === "string" && source.birthDate !== "" ? source.birthDate : "-"
+      };
+    }
+
+    function cloneHistoryEntry(entry) {
+      return {
+        createdAt: entry.createdAt,
+        memo: entry.memo,
+        items: entry.items.map((person) => ({
+          name: person.name,
+          age: person.age,
+          birthday: person.birthday,
+          birthDate: person.birthDate
+        }))
+      };
+    }
+
+    function cloneHistoryList(history) {
+      return history.map((entry) => cloneHistoryEntry(entry));
+    }
+
+    function saveHistory(items, memo) {
+      const history = getHistory();
+      history.unshift({
+        createdAt: new Date().toISOString(),
+        memo: typeof memo === "string" ? memo : "",
+        items: items
+      });
+      setHistory(history.slice(0, HISTORY_LIMIT));
+      setHistoryStatus("履歴を追加しました。", false);
+    }
+
+    function clearHistory() {
+      const history = getHistory();
+      if (history.length === 0) {
+        setHistoryStatus("クリアする履歴がありません。", true);
+        return;
+      }
+      setUndoState({
+        type: "clear",
+        entries: cloneHistoryList(history)
+      });
+      setHistory([]);
+      setHistoryStatus("履歴をクリアしました。", false);
+      renderHistory();
+    }
+
+    function deleteHistoryAt(index) {
+      const history = getHistory();
+      if (!Number.isInteger(index) || index < 0 || index >= history.length) {
+        return;
+      }
+      const removed = history[index];
+      history.splice(index, 1);
+      setUndoState({
+        type: "delete",
+        entry: cloneHistoryEntry(removed),
+        index: index
+      });
+      setHistory(history);
+      setHistoryStatus("履歴を1件削除しました。", false);
+      renderHistory();
+    }
+
+    function updateHistoryMemo(index, memo) {
+      const history = getHistory();
+      if (!Number.isInteger(index) || index < 0 || index >= history.length) {
+        return;
+      }
+      history[index].memo = String(memo).slice(0, 300);
+      setHistory(history);
+      setHistoryStatus("メモを保存しました。", false);
+      renderHistory();
+    }
+
+    function clearHistoryFilters() {
+      historySearchInput.value = "";
+      historyDateInput.value = "";
+      renderHistory();
+    }
+
+    function setUndoState(state) {
+      undoState = state;
+      updateUndoUi();
+    }
+
+    function clearUndoState() {
+      undoState = null;
+      updateUndoUi();
+    }
+
+    function updateUndoUi() {
+      if (!undoState) {
+        undoHistoryBtn.hidden = true;
+        undoHistoryBtn.textContent = "取り消す";
+        return;
+      }
+
+      undoHistoryBtn.hidden = false;
+      if (undoState.type === "delete") {
+        undoHistoryBtn.textContent = "取り消す（1件削除）";
+        return;
+      }
+      if (undoState.type === "clear") {
+        undoHistoryBtn.textContent = "取り消す（全削除）";
+        return;
+      }
+      if (undoState.type === "import") {
+        undoHistoryBtn.textContent = "取り消す（取込）";
+        return;
+      }
+      undoHistoryBtn.textContent = "取り消す";
+    }
+
+    function undoLastHistoryAction() {
+      if (!undoState) {
+        return;
+      }
+
+      const state = undoState;
+      const history = getHistory();
+
+      if (state.type === "delete") {
+        const insertIndex = Math.min(state.index, history.length);
+        history.splice(insertIndex, 0, cloneHistoryEntry(state.entry));
+        setHistory(history.slice(0, HISTORY_LIMIT));
+        setHistoryStatus("削除を取り消しました。", false);
+      } else if (state.type === "clear") {
+        setHistory(cloneHistoryList(state.entries).slice(0, HISTORY_LIMIT));
+        setHistoryStatus("全削除を取り消しました。", false);
+      } else if (state.type === "import") {
+        setHistory(cloneHistoryList(state.entries).slice(0, HISTORY_LIMIT));
+        setHistoryStatus("取込を取り消しました。", false);
+      }
+
+      clearUndoState();
+      renderHistory();
+    }
+
+    function setHistoryStatus(message, isError) {
+      historyStatus.textContent = message || "";
+      historyStatus.classList.toggle("error", Boolean(isError));
+    }
+
+    function parseImportedHistoryEntries(text) {
+      const parsed = JSON.parse(text);
+      let entries = null;
+
+      if (Array.isArray(parsed)) {
+        entries = parsed;
+      } else if (parsed && typeof parsed === "object" && Array.isArray(parsed.entries)) {
+        entries = parsed.entries;
+      }
+
+      if (!entries) {
+        throw new Error("JSON形式が不正です。");
+      }
+
+      return entries
+        .map((entry) => sanitizeHistoryEntry(entry))
+        .filter((entry) => entry.items.length > 0);
+    }
+
+    function importHistoryFromJsonFile(event) {
+      const file = event.target.files && event.target.files[0];
+      historyImportInput.value = "";
+      if (!file) {
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function () {
+        try {
+          const text = typeof reader.result === "string" ? reader.result : "";
+          const imported = parseImportedHistoryEntries(text);
+          if (imported.length === 0) {
+            throw new Error("取り込める履歴がありません。");
+          }
+
+          const current = getHistory();
+          setUndoState({
+            type: "import",
+            entries: cloneHistoryList(current)
+          });
+
+          const merged = current.concat(imported);
+          merged.sort((a, b) => historyTimestamp(b.createdAt) - historyTimestamp(a.createdAt));
+          setHistory(merged.slice(0, HISTORY_LIMIT));
+          setHistoryStatus(imported.length + "件の履歴を取り込みました。", false);
+          renderHistory();
+        } catch (error) {
+          setHistoryStatus("JSON取込に失敗しました。形式を確認してください。", true);
+        }
+      };
+
+      reader.onerror = function () {
+        setHistoryStatus("ファイルの読み込みに失敗しました。", true);
+      };
+
+      reader.readAsText(file, "utf-8");
+    }
+
+    function historyTimestamp(createdAt) {
+      const value = new Date(createdAt).getTime();
+      return Number.isNaN(value) ? 0 : value;
+    }
+
+    function exportHistoryAsJson() {
+      const history = getHistory();
+      if (history.length === 0) {
+        setHistoryStatus("出力できる履歴がありません。", true);
+        return;
+      }
+      const payload = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        entries: history
+      };
+      downloadTextFile(
+        "seinengappi-history-" + getFileStamp() + ".json",
+        JSON.stringify(payload, null, 2),
+        "application/json;charset=utf-8"
+      );
+      setHistoryStatus("JSONを出力しました。", false);
+    }
+
+    function exportHistoryAsCsv() {
+      const history = getHistory();
+      if (history.length === 0) {
+        setHistoryStatus("出力できる履歴がありません。", true);
+        return;
+      }
+      downloadTextFile(
+        "seinengappi-history-" + getFileStamp() + ".csv",
+        buildHistoryCsv(history),
+        "text/csv;charset=utf-8"
+      );
+      setHistoryStatus("CSVを出力しました。", false);
+    }
+
+    function buildHistoryCsv(history) {
+      const rows = [
+        ["record_index", "created_at_iso", "created_at_local", "memo", "person_name", "age", "birthday", "birth_date"]
+      ];
+
+      history.forEach((entry, index) => {
+        const createdLocal = formatHistoryDateTime(entry.createdAt);
+        entry.items.forEach((person) => {
+          rows.push([
+            String(index + 1),
+            entry.createdAt,
+            createdLocal,
+            entry.memo || "",
+            person.name,
+            String(person.age),
+            person.birthday,
+            person.birthDate
+          ]);
+        });
+      });
+
+      return rows.map((row) => row.map((cell) => csvEscape(cell)).join(",")).join("\n");
+    }
+
+    function csvEscape(value) {
+      const text = String(value == null ? "" : value);
+      if (/[",\n]/.test(text)) {
+        return '"' + text.replace(/"/g, '""') + '"';
+      }
+      return text;
+    }
+
+    function downloadTextFile(filename, content, mimeType) {
+      const blob = new Blob([content], { type: mimeType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function getFileStamp() {
+      const now = new Date();
+      return (
+        String(now.getFullYear()) +
+        String(now.getMonth() + 1).padStart(2, "0") +
+        String(now.getDate()).padStart(2, "0") +
+        "-" +
+        String(now.getHours()).padStart(2, "0") +
+        String(now.getMinutes()).padStart(2, "0") +
+        String(now.getSeconds()).padStart(2, "0")
+      );
+    }
+
+    function getHistoryFilter() {
+      return {
+        keyword: normalizeHistorySearch(historySearchInput.value),
+        date: historyDateInput.value
+      };
+    }
+
+    function normalizeHistorySearch(value) {
+      return String(value).trim().toLowerCase();
+    }
+
+    function formatHistoryDateValue(createdAt) {
+      const date = new Date(createdAt);
+      if (Number.isNaN(date.getTime())) {
+        return "";
+      }
+      return (
+        String(date.getFullYear()) +
+        "-" +
+        String(date.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(date.getDate()).padStart(2, "0")
+      );
+    }
+
+    function formatHistoryDateTime(createdAt) {
+      const date = new Date(createdAt);
+      if (Number.isNaN(date.getTime())) {
+        return "日時不明";
+      }
+      return date.toLocaleString("ja-JP");
+    }
+
+    function matchesHistoryFilter(entry, filter) {
+      if (filter.date) {
+        if (formatHistoryDateValue(entry.createdAt) !== filter.date) {
+          return false;
+        }
+      }
+
+      if (!filter.keyword) {
+        return true;
+      }
+
+      const searchParts = [
+        formatHistoryDateTime(entry.createdAt),
+        formatHistoryDateValue(entry.createdAt),
+        entry.createdAt,
+        entry.memo || ""
+      ];
+
+      entry.items.forEach((person) => {
+        searchParts.push(person.name, String(person.age), person.birthday, person.birthDate);
+      });
+
+      return searchParts.join(" ").toLowerCase().includes(filter.keyword);
+    }
+
+    function renderHistory() {
+      updateUndoUi();
+      const history = getHistory();
+      if (history.length === 0) {
+        historyContainer.innerHTML = '<p class="history-empty">履歴はまだありません。</p>';
+        return;
+      }
+
+      const filter = getHistoryFilter();
+      const visibleEntries = history
+        .map((entry, index) => ({ entry: entry, index: index }))
+        .filter((value) => matchesHistoryFilter(value.entry, filter));
+
+      if (visibleEntries.length === 0) {
+        historyContainer.innerHTML = '<p class="history-empty">条件に一致する履歴はありません。</p>';
+        return;
+      }
+
+      const list = document.createElement("div");
+      list.className = "history-list";
+
+      visibleEntries.forEach((value) => {
+        const entry = value.entry;
+        const index = value.index;
+        const item = document.createElement("article");
+        item.className = "history-item";
+
+        const header = document.createElement("div");
+        header.className = "history-header";
+
+        const timeDiv = document.createElement("div");
+        timeDiv.className = "history-time";
+        timeDiv.textContent = formatHistoryDateTime(entry.createdAt);
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.className = "history-delete-btn";
+        deleteBtn.textContent = "この履歴を削除";
+        deleteBtn.addEventListener("click", () => {
+          deleteHistoryAt(index);
+        });
+
+        header.appendChild(timeDiv);
+        header.appendChild(deleteBtn);
+        item.appendChild(header);
+
+        const ul = document.createElement("ul");
+        entry.items.forEach((person) => {
+          const li = document.createElement("li");
+          li.textContent =
+            person.name +
+            " (年齢 " +
+            person.age +
+            " / 誕生日 " +
+            person.birthday +
+            ") → " +
+            person.birthDate;
+          ul.appendChild(li);
+        });
+        item.appendChild(ul);
+
+        const memoWrap = document.createElement("div");
+        memoWrap.className = "history-memo-wrap";
+
+        const memoLabel = document.createElement("label");
+        memoLabel.className = "history-memo-label";
+        memoLabel.textContent = "メモ（任意）";
+
+        const memoInput = document.createElement("textarea");
+        memoInput.className = "history-memo-input";
+        memoInput.maxLength = 300;
+        memoInput.placeholder = "自由メモ";
+        memoInput.value = entry.memo || "";
+
+        const memoActions = document.createElement("div");
+        memoActions.className = "history-memo-actions";
+
+        const memoSaveBtn = document.createElement("button");
+        memoSaveBtn.type = "button";
+        memoSaveBtn.className = "history-memo-save";
+        memoSaveBtn.textContent = "メモ保存";
+        memoSaveBtn.addEventListener("click", () => {
+          updateHistoryMemo(index, memoInput.value);
+        });
+
+        memoActions.appendChild(memoSaveBtn);
+        memoWrap.appendChild(memoLabel);
+        memoWrap.appendChild(memoInput);
+        memoWrap.appendChild(memoActions);
+        item.appendChild(memoWrap);
+
+        list.appendChild(item);
+      });
+
+      historyContainer.innerHTML = "";
+      historyContainer.appendChild(list);
+    }
+
+  </script>
+</body>
+</html>
