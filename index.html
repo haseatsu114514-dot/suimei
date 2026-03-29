@@ -2584,6 +2584,7 @@
         const labelPrefix = options.labelPrefix ? `${options.labelPrefix} ` : "";
         const availableBranches = Array.isArray(options.availableBranches) ? options.availableBranches : [];
         const kuubou = Array.isArray(options.kuubou) ? options.kuubou : [];
+        const includeSpecialBadges = Boolean(options.includeSpecialBadges);
 
         if (kuubou.includes(targetPillar.chishi)) {
           pushRelationBadge(badges, `${labelPrefix}空亡`, "amber", `${labelPrefix}-kuubou`);
@@ -2611,12 +2612,14 @@
           pushRelationBadge(badges, `${labelPrefix}方合`, "green", `${labelPrefix}-hougou`);
         }
         if (
+          includeSpecialBadges &&
           TENKAN_KANGOU_MAP[basePillar.tenkan] === targetPillar.tenkan &&
           CHISHI_SHIGOU_MAP[basePillar.chishi] === targetPillar.chishi
         ) {
           pushRelationBadge(badges, `${labelPrefix}天地徳合`, "blue", `${labelPrefix}-tentitokugou`);
         }
         if (
+          includeSpecialBadges &&
           isTensenChichu(basePillar.tenkan, targetPillar.tenkan) &&
           CHISHI_CHONG_MAP[basePillar.chishi] === targetPillar.chishi
         ) {
@@ -2655,7 +2658,8 @@
           const pairBadges = getPairRelationBadges(luckPillar, pillar, {
             availableBranches: allBranches,
             kuubou,
-            labelPrefix: COLUMN_LABELS[column]
+            labelPrefix: COLUMN_LABELS[column],
+            includeSpecialBadges: column === "day"
           });
           pairBadges.forEach((badge) => {
             pushRelationBadge(badges, badge.label, badge.color, badge.key);
