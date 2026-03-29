@@ -96,7 +96,7 @@
     }
 
     .hero {
-      padding: 14px 16px 12px;
+      padding: 12px 14px 10px;
       border-radius: 12px;
       background: var(--card-strong);
       border: 1px solid var(--line);
@@ -112,23 +112,23 @@
 
     .hero h1 {
       margin: 0;
-      font-size: clamp(1.3rem, 3vw, 1.6rem);
+      font-size: clamp(1.2rem, 2.8vw, 1.45rem);
       letter-spacing: 0.02em;
       color: var(--text);
     }
 
     .hero p {
-      margin: 8px 0 0;
+      margin: 6px 0 0;
       max-width: 720px;
       color: var(--sub);
-      line-height: 1.6;
-      font-size: 0.94rem;
+      line-height: 1.5;
+      font-size: 0.88rem;
     }
 
     .hero-meta {
-      margin-top: 10px;
+      margin-top: 8px;
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
@@ -136,12 +136,12 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 10px;
+      padding: 5px 8px;
       border-radius: 999px;
       border: 1px solid rgba(77, 53, 28, 0.14);
       background: rgba(255, 255, 255, 0.72);
       color: var(--sub);
-      font-size: 0.84rem;
+      font-size: 0.78rem;
     }
 
     .tabs {
@@ -203,7 +203,7 @@
       border-radius: 12px;
       background: var(--card);
       box-shadow: none;
-      padding: 14px;
+      padding: 12px;
       overflow: hidden;
     }
 
@@ -216,18 +216,18 @@
     }
 
     .card h2 {
-      font-size: 1.08rem;
-    }
-
-    .card h3 {
       font-size: 1rem;
     }
 
-    .section-note {
-      margin: 0 0 14px;
-      color: var(--sub);
-      line-height: 1.65;
+    .card h3 {
       font-size: 0.95rem;
+    }
+
+    .section-note {
+      margin: 0 0 10px;
+      color: var(--sub);
+      line-height: 1.55;
+      font-size: 0.87rem;
     }
 
     .fortune-layout {
@@ -241,12 +241,12 @@
       display: flex;
       gap: 0;
       border-bottom: 1px solid var(--line);
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
 
     .fortune-view-btn {
-      min-height: 40px;
-      padding: 8px 16px;
+      min-height: 36px;
+      padding: 7px 14px;
       border-radius: 0;
       border: none;
       border-bottom: 2px solid transparent;
@@ -271,7 +271,7 @@
     .settings-grid,
     .summary-grid {
       display: grid;
-      gap: 12px;
+      gap: 10px;
     }
 
     .input-grid,
@@ -290,11 +290,11 @@
 
     .field {
       display: grid;
-      gap: 6px;
+      gap: 4px;
     }
 
     .field label {
-      font-size: 0.9rem;
+      font-size: 0.82rem;
       color: var(--sub);
     }
 
@@ -303,8 +303,8 @@
     .field textarea {
       width: 100%;
       border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 11px 12px;
+      border-radius: 12px;
+      padding: 9px 10px;
       background: var(--card-strong);
       color: var(--text);
       outline: none;
@@ -327,9 +327,9 @@
     .segmented {
       display: inline-grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      padding: 8px;
-      border-radius: 18px;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 14px;
       background: var(--bg-strong);
       border: 1px solid var(--line);
     }
@@ -345,12 +345,13 @@
     .segmented span {
       display: block;
       text-align: center;
-      border-radius: 12px;
-      padding: 10px 12px;
+      border-radius: 10px;
+      padding: 8px 10px;
       border: 1px solid transparent;
       color: var(--sub);
       background: transparent;
       transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+      font-size: 0.85rem;
     }
 
     .segmented input:checked + span {
@@ -384,17 +385,18 @@
 
     .actions {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
-      margin-top: 14px;
+      margin-top: 10px;
     }
 
     .btn {
       border: 1px solid transparent;
-      border-radius: 14px;
-      padding: 11px 15px;
-      min-height: 44px;
+      border-radius: 12px;
+      padding: 9px 12px;
+      min-height: 38px;
       transition: transform 0.16s ease, opacity 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+      font-size: 0.9rem;
     }
 
     .btn:hover {
@@ -425,16 +427,16 @@
     }
 
     .hint-text {
-      margin: 8px 0 0;
+      margin: 4px 0 0;
       color: var(--sub);
-      font-size: 0.88rem;
-      line-height: 1.6;
+      font-size: 0.8rem;
+      line-height: 1.5;
     }
 
     .status {
       min-height: 1.4em;
-      margin-top: 12px;
-      font-size: 0.92rem;
+      margin-top: 8px;
+      font-size: 0.84rem;
       color: var(--sub);
     }
 
@@ -542,19 +544,41 @@
 
     .person-input-stack {
       display: grid;
-      gap: 18px;
+      gap: 14px;
     }
 
     .person-input-panel small {
       color: var(--sub);
       font-weight: 400;
+      font-size: 0.75rem;
     }
 
     .soft-divider {
       height: 1px;
-      margin: 18px 0 16px;
+      margin: 12px 0 10px;
       background: var(--line);
       border: none;
+    }
+
+    .fortune-input-card {
+      padding: 11px;
+    }
+
+    .fortune-input-card .section-note {
+      margin-bottom: 8px;
+    }
+
+    .fortune-input-card .subsection-title {
+      margin: 0 0 6px;
+      font-size: 0.92rem;
+    }
+
+    .fortune-input-card .meta-grid {
+      margin-top: 10px !important;
+    }
+
+    .fortune-input-actions .btn {
+      flex: 1 1 120px;
     }
 
     .result-toggle-bar {
@@ -1284,12 +1308,12 @@
     @media (max-width: 720px) {
       .app-shell {
         width: min(100% - 16px, 100%);
-        padding-top: 12px;
+        padding-top: 10px;
       }
 
       .card,
       .hero {
-        border-radius: 20px;
+        border-radius: 16px;
       }
 
       .tabs {
@@ -1300,7 +1324,15 @@
       }
 
       .tab-btn {
-        padding: 11px 6px;
+        padding: 9px 6px;
+      }
+
+      .hero p {
+        font-size: 0.84rem;
+      }
+
+      .hero-chip {
+        font-size: 0.74rem;
       }
 
       .pill-table th,
@@ -1336,13 +1368,11 @@
     <header class="hero">
       <h1>四柱推命パーソナルツール</h1>
       <p>
-        生年月日・出生時刻・性別から命式を算出し、四柱・大運・月運・日運を確認できます。
-        生年月日は直接入力が基本で、必要なときだけ「今の年齢 + 誕生日」から補助的に入力できます。
+        本人必須・相手任意。直接入力を基本に、必要なときだけ年齢逆算も使えます。
       </p>
       <div class="hero-meta">
         <span class="hero-chip" id="todayJstChip">JST基準日: --</span>
         <span class="hero-chip" id="storageChip">保存先: localStorage</span>
-        <span class="hero-chip">単一HTML / オフライン可</span>
       </div>
     </header>
 
@@ -1360,21 +1390,21 @@
         </div>
         <div class="fortune-view-panel" id="fortuneViewInput">
         <div class="grid">
-          <article class="card reference-layout">
+          <article class="card reference-layout fortune-input-card">
             <h2>入力</h2>
             <p class="section-note">
-              本人は必須、相手は任意です。片方だけでも占えます。保存済みの命式は履歴から本人欄・相手欄へ読み戻せます。
+              本人は必須、相手は任意です。保存済みの命式は履歴から本人欄・相手欄へ戻せます。
             </p>
 
             <div class="person-input-stack">
               <section class="person-input-panel" data-person-slot="primary">
                 <h3 class="subsection-title">本人</h3>
                 <div class="field">
-                  <label for="primaryNameInput">名前（任意）</label>
+                  <label for="primaryNameInput">名前</label>
                   <input id="primaryNameInput" type="text" maxlength="60" placeholder="例: 山田 太郎">
                 </div>
                 <div class="field">
-                  <label>生年月日の入力方法</label>
+                  <label>入力方法</label>
                   <div class="segmented" role="radiogroup" aria-label="本人の生年月日の入力方法">
                     <label>
                       <input type="radio" name="primaryBirthInputMode" value="direct" checked>
@@ -1411,11 +1441,11 @@
                 </div>
                 <div class="meta-grid" style="margin-top: 14px;">
                   <div class="field">
-                    <label for="primaryBirthTimeInput">出生時刻（空欄なら不明）</label>
+                    <label for="primaryBirthTimeInput">出生時刻</label>
                     <input id="primaryBirthTimeInput" type="time">
                   </div>
                   <div class="field hidden" id="primaryBirthPlaceField">
-                    <label for="primaryBirthPlaceInput">出生地（時刻入力時は必須）</label>
+                    <label for="primaryBirthPlaceInput">出生地（時刻入力時）</label>
                     <input id="primaryBirthPlaceInput" type="text" list="birthPlaceOptions" placeholder="例: 東京都 / 大阪 / 那覇">
                   </div>
                   <div class="field">
@@ -1434,11 +1464,11 @@
               <section class="person-input-panel" data-person-slot="secondary">
                 <h3 class="subsection-title">相手 <small>任意</small></h3>
                 <div class="field">
-                  <label for="secondaryNameInput">名前（任意）</label>
+                  <label for="secondaryNameInput">名前</label>
                   <input id="secondaryNameInput" type="text" maxlength="60" placeholder="例: 相手の名前">
                 </div>
                 <div class="field">
-                  <label>生年月日の入力方法</label>
+                  <label>入力方法</label>
                   <div class="segmented" role="radiogroup" aria-label="相手の生年月日の入力方法">
                     <label>
                       <input type="radio" name="secondaryBirthInputMode" value="direct" checked>
@@ -1475,11 +1505,11 @@
                 </div>
                 <div class="meta-grid" style="margin-top: 14px;">
                   <div class="field">
-                    <label for="secondaryBirthTimeInput">出生時刻（空欄なら不明）</label>
+                    <label for="secondaryBirthTimeInput">出生時刻</label>
                     <input id="secondaryBirthTimeInput" type="time">
                   </div>
                   <div class="field hidden" id="secondaryBirthPlaceField">
-                    <label for="secondaryBirthPlaceInput">出生地（時刻入力時は必須）</label>
+                    <label for="secondaryBirthPlaceInput">出生地（時刻入力時）</label>
                     <input id="secondaryBirthPlaceInput" type="text" list="birthPlaceOptions" placeholder="例: 東京都 / 大阪 / 那覇">
                   </div>
                   <div class="field">
@@ -1494,10 +1524,10 @@
               </section>
             </div>
 
-            <div class="actions">
-              <button class="btn btn-primary" type="button" id="calculateBtn">命式を算出する</button>
-              <button class="btn btn-secondary" type="button" id="saveCurrentBtn">履歴名を変更</button>
-              <button class="btn btn-ghost" type="button" id="clearFormBtn">入力をクリア</button>
+            <div class="actions fortune-input-actions">
+              <button class="btn btn-primary" type="button" id="calculateBtn">命式を出す</button>
+              <button class="btn btn-secondary" type="button" id="saveCurrentBtn">履歴名変更</button>
+              <button class="btn btn-ghost" type="button" id="clearFormBtn">クリア</button>
             </div>
 
             <div class="status" id="fortuneStatus"></div>
