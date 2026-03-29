@@ -554,6 +554,59 @@
       padding: 10px;
     }
 
+    .person-input-panel.person-collapsible {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .person-panel-summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .person-panel-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .person-panel-summary-text {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      font-weight: 700;
+      color: var(--text);
+      font-size: 0.92rem;
+    }
+
+    .person-panel-summary-text small {
+      color: var(--sub);
+      font-weight: 400;
+      font-size: 0.74rem;
+    }
+
+    .person-panel-summary-state {
+      color: var(--sub);
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    .person-collapsible[open] .person-panel-summary-state::after {
+      content: "閉じる";
+    }
+
+    .person-collapsible:not([open]) .person-panel-summary-state::after {
+      content: "開く";
+    }
+
+    .person-panel-body {
+      padding: 0 10px 10px;
+      border-top: 1px solid var(--line);
+    }
+
     .compact-person-grid {
       display: grid;
       grid-template-columns: minmax(0, 1.6fr) minmax(110px, 0.8fr);
@@ -1514,8 +1567,12 @@
 
               <hr class="soft-divider">
 
-              <section class="person-input-panel" data-person-slot="secondary">
-                <h3 class="subsection-title">相手 <small>任意</small></h3>
+              <details class="person-input-panel person-collapsible" id="secondaryPanel" data-person-slot="secondary">
+                <summary class="person-panel-summary">
+                  <span class="person-panel-summary-text">相手 <small>任意</small></span>
+                  <span class="person-panel-summary-state" aria-hidden="true"></span>
+                </summary>
+                <div class="person-panel-body">
                 <div class="compact-person-grid">
                   <div class="field">
                     <label for="secondaryNameInput">名前</label>
@@ -1576,7 +1633,8 @@
                     <input id="secondaryBirthPlaceInput" type="text" list="birthPlaceOptions" placeholder="例: 東京都 / 大阪 / 那覇">
                   </div>
                 </div>
-              </section>
+                </div>
+              </details>
             </div>
 
             <div class="actions fortune-input-actions">
@@ -3057,6 +3115,7 @@
       function getPersonElements(slot) {
         return {
           slot,
+          panelRoot: document.querySelector(`[data-person-slot="${slot}"]`),
           nameInput: document.getElementById(`${slot}NameInput`),
           birthdateInput: document.getElementById(`${slot}BirthdateInput`),
           birthdayMonthInput: document.getElementById(`${slot}BirthdayMonthInput`),
@@ -3242,6 +3301,7 @@
           syncBirthTimeUnknownState(slot);
           renderReversePreview(slot);
         });
+        syncSecondaryPanelOpenState();
         applyCustomZoukanToEditor();
       }
 
@@ -3289,17 +3349,34 @@
             radio.addEventListener("change", () => {
               syncBirthInputModeUi(slot);
               renderReversePreview(slot);
+              if (slot === "secondary") syncSecondaryPanelOpenState();
             });
           });
           person.birthTimeInput.addEventListener("input", () => {
             syncBirthTimeUnknownState(slot);
+            if (slot === "secondary") syncSecondaryPanelOpenState();
           });
           person.birthTimeInput.addEventListener("change", () => {
             syncBirthTimeUnknownState(slot);
+            if (slot === "secondary") syncSecondaryPanelOpenState();
           });
           person.currentAgeInput.addEventListener("input", () => renderReversePreview(slot));
           person.birthdayMonthInput.addEventListener("change", () => renderReversePreview(slot));
           person.birthdayDayInput.addEventListener("change", () => renderReversePreview(slot));
+          if (slot === "secondary") {
+            [
+              person.nameInput,
+              person.birthdateInput,
+              person.currentAgeInput,
+              person.birthdayMonthInput,
+              person.birthdayDayInput,
+              person.birthPlaceInput,
+              person.genderInput
+            ].forEach((input) => {
+              input.addEventListener("input", () => syncSecondaryPanelOpenState());
+              input.addEventListener("change", () => syncSecondaryPanelOpenState());
+            });
+          }
         });
 
         elements.resultPersonTabButtons.forEach((button) => {
@@ -3360,6 +3437,12 @@
         if (!showBirthPlace) {
           person.birthPlaceInput.value = "";
         }
+      }
+
+      function syncSecondaryPanelOpenState(forceOpen = false) {
+        const panel = elements.person.secondary.panelRoot;
+        if (!panel || panel.tagName !== "DETAILS") return;
+        panel.open = forceOpen || !isPersonInputBlank("secondary");
       }
 
       function normalizeDigitText(value) {
@@ -3883,6 +3966,9 @@
         syncBirthInputModeUi(slot);
         syncBirthTimeUnknownState(slot);
         renderReversePreview(slot);
+        if (slot === "secondary") {
+          syncSecondaryPanelOpenState(false);
+        }
       }
 
       function clearForm() {
@@ -4020,6 +4106,9 @@
         syncBirthInputModeUi(slot);
         syncBirthTimeUnknownState(slot);
         renderReversePreview(slot);
+        if (slot === "secondary") {
+          syncSecondaryPanelOpenState(true);
+        }
         switchTab("fortune");
         switchFortuneView("input");
         setStatus(elements.fortuneStatus, `${SLOT_LABELS[slot]}欄に履歴を読み込みました。`, "success");
