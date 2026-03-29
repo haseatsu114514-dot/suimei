@@ -547,6 +547,21 @@
       gap: 14px;
     }
 
+    .person-input-panel {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--card-strong);
+      padding: 10px;
+    }
+
+    .compact-person-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(110px, 0.8fr);
+      gap: 8px;
+      align-items: end;
+      margin-bottom: 8px;
+    }
+
     .person-input-panel small {
       color: var(--sub);
       font-weight: 400;
@@ -575,10 +590,36 @@
 
     .fortune-input-card .meta-grid {
       margin-top: 10px !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .fortune-input-card .reverse-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .fortune-input-card .field + .field {
+      margin-top: 8px;
+    }
+
+    .fortune-input-card .compact-person-grid .field + .field,
+    .fortune-input-card .reverse-grid .field + .field,
+    .fortune-input-card .meta-grid .field + .field {
+      margin-top: 0;
     }
 
     .fortune-input-actions .btn {
       flex: 1 1 120px;
+    }
+
+    @media (min-width: 721px) {
+      .person-input-stack {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .soft-divider {
+        display: none;
+      }
     }
 
     .result-toggle-bar {
@@ -1316,6 +1357,16 @@
         border-radius: 16px;
       }
 
+      .person-input-panel {
+        padding: 9px;
+      }
+
+      .compact-person-grid,
+      .fortune-input-card .meta-grid,
+      .fortune-input-card .reverse-grid {
+        grid-template-columns: 1fr;
+      }
+
       .tabs {
         position: sticky;
         top: 10px;
@@ -1399,9 +1450,19 @@
             <div class="person-input-stack">
               <section class="person-input-panel" data-person-slot="primary">
                 <h3 class="subsection-title">本人</h3>
-                <div class="field">
-                  <label for="primaryNameInput">名前</label>
-                  <input id="primaryNameInput" type="text" maxlength="60" placeholder="例: 山田 太郎">
+                <div class="compact-person-grid">
+                  <div class="field">
+                    <label for="primaryNameInput">名前</label>
+                    <input id="primaryNameInput" type="text" maxlength="60" placeholder="例: 山田 太郎">
+                  </div>
+                  <div class="field">
+                    <label for="primaryGenderInput">性別</label>
+                    <select id="primaryGenderInput">
+                      <option value="">選択してください</option>
+                      <option value="male">男性</option>
+                      <option value="female">女性</option>
+                    </select>
+                  </div>
                 </div>
                 <div class="field">
                   <label>入力方法</label>
@@ -1448,14 +1509,6 @@
                     <label for="primaryBirthPlaceInput">出生地（時刻入力時）</label>
                     <input id="primaryBirthPlaceInput" type="text" list="birthPlaceOptions" placeholder="例: 東京都 / 大阪 / 那覇">
                   </div>
-                  <div class="field">
-                    <label for="primaryGenderInput">性別</label>
-                    <select id="primaryGenderInput">
-                      <option value="">選択してください</option>
-                      <option value="male">男性</option>
-                      <option value="female">女性</option>
-                    </select>
-                  </div>
                 </div>
               </section>
 
@@ -1463,9 +1516,19 @@
 
               <section class="person-input-panel" data-person-slot="secondary">
                 <h3 class="subsection-title">相手 <small>任意</small></h3>
-                <div class="field">
-                  <label for="secondaryNameInput">名前</label>
-                  <input id="secondaryNameInput" type="text" maxlength="60" placeholder="例: 相手の名前">
+                <div class="compact-person-grid">
+                  <div class="field">
+                    <label for="secondaryNameInput">名前</label>
+                    <input id="secondaryNameInput" type="text" maxlength="60" placeholder="例: 相手の名前">
+                  </div>
+                  <div class="field">
+                    <label for="secondaryGenderInput">性別</label>
+                    <select id="secondaryGenderInput">
+                      <option value="">選択してください</option>
+                      <option value="male">男性</option>
+                      <option value="female">女性</option>
+                    </select>
+                  </div>
                 </div>
                 <div class="field">
                   <label>入力方法</label>
@@ -1511,14 +1574,6 @@
                   <div class="field hidden" id="secondaryBirthPlaceField">
                     <label for="secondaryBirthPlaceInput">出生地（時刻入力時）</label>
                     <input id="secondaryBirthPlaceInput" type="text" list="birthPlaceOptions" placeholder="例: 東京都 / 大阪 / 那覇">
-                  </div>
-                  <div class="field">
-                    <label for="secondaryGenderInput">性別</label>
-                    <select id="secondaryGenderInput">
-                      <option value="">選択してください</option>
-                      <option value="male">男性</option>
-                      <option value="female">女性</option>
-                    </select>
                   </div>
                 </div>
               </section>
